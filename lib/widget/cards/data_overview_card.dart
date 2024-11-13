@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../entity/data_overview.dart';
+import '../../test_cases.dart';
 import '../chart/line_chart.dart';
-import '../entity/data_overview.dart';
-import '../test_cases.dart';
+
 
 class DataOverviewCard extends StatelessWidget {
   final DataOverview dataOverview;

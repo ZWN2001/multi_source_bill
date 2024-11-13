@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-import '../entity/line_chart_data.dart';
+import '../../entity/line_chart_data.dart';
 
 class LineChart extends StatelessWidget {
   final List<LineChartData> chartData;

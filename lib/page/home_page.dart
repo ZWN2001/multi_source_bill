@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:multi_source_bill/utils/keep_alive.dart';
 
-import '../cards/data_overview_card.dart';
+
+import '../api/api.dart';
+import '../entity/data_overview.dart';
 import '../test_cases.dart';
+import '../widget/cards/data_overview_card.dart';
 
 
 
@@ -21,11 +24,12 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   late ZoomDrawerController zoomDrawerController;
+  List<DataOverview> dataOverviews = [];
   @override
   void initState() {
     super.initState();
     zoomDrawerController = widget.controller;
-
+    dataOverviews.addAll(DataApi.getDataOverviews());
   }
   @override
   Widget build(BuildContext context) {
@@ -41,7 +45,7 @@ class HomePageState extends State<HomePage> {
               flexibleSpace: FlexibleSpaceBar(
                   background: Container(
                     margin: const EdgeInsets.fromLTRB(16, 64, 16, 0),
-                    child: DataOverviewCard(dataOverview: TestCases.dataOverview),
+                    child: DataOverviewCard(dataOverview: dataOverviews[0]),
                   )
               ),
             )
@@ -54,10 +58,10 @@ class HomePageState extends State<HomePage> {
           itemBuilder: (BuildContext context, int index) {
             return KeepAliveWrapper(child: SizedBox(
               height: 200,
-              child: DataOverviewCard(dataOverview: TestCases.dataOverviews[index]),
+              child: DataOverviewCard(dataOverview: dataOverviews[index+1]),
             ));
           },
-          itemCount: TestCases.dataOverviews.length,
+          itemCount: dataOverviews.length - 1,
         ),
       ),
 

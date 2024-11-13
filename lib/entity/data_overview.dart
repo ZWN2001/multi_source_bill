@@ -2,8 +2,8 @@ import 'line_chart_data.dart';
 
 class DataOverview {
   final String source;
-  final double amount;
-  final double amountLast;
+  double amount;
+  double amountLast;
   final List<LineChartData> chartData;
 
   DataOverview({

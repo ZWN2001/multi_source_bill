@@ -1,7 +1,7 @@
 import '../entity/line_chart_data.dart';
 
 class MathUtils{
-  double min(List<double> list){
+  static double min(List<double> list){
     double min = list[0];
     for (int i = 1; i < list.length; i++) {
       if (list[i] < min) {
@@ -11,7 +11,7 @@ class MathUtils{
     return min;
   }
 
-  double max(List<double> list){
+  static double max(List<double> list){
     double max = list[0];
     for (int i = 1; i < list.length; i++) {
       if (list[i] > max) {
@@ -21,7 +21,7 @@ class MathUtils{
     return max;
   }
 
-  List<double> lineChartDataMinMax(List<LineChartData> list){
+  static List<double> lineChartDataMinMax(List<LineChartData> list){
     List<double> result = [];
     List<double> data = [];
     for (int i = 0; i < list.length; i++) {

@@ -59,19 +59,15 @@ class HomePageState extends State<HomePage> {
           itemBuilder: (BuildContext context, int index) {
             return KeepAliveWrapper(
                 child: SizedBox(
-              height: 200,
+              height: 240,
               child: DataOverviewCard(
                 dataOverview: dataOverviews[index],
                 enableEdit: true,
                 deleteCallback: () {
-                  setState(() {
-                    dataOverviews.clear();
-                    dataOverviews.addAll(DataApi.getDataOverviews());
-                  });
+                  refresh();
                 },
                 updateCallback: () {
-                  dataOverviews.clear();
-                  dataOverviews.addAll(DataApi.getDataOverviews());
+                  refresh();
                 },
               ),
             ));
@@ -83,15 +79,20 @@ class HomePageState extends State<HomePage> {
         onPressed: () async {
           bool result = await showDialogFunction(context);
           if (result) {
-            setState(() {
-              dataOverviews.clear();
-              dataOverviews.addAll(DataApi.getDataOverviews());
-            });
+            refresh();
           }
         },
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  void refresh(){
+    setState(() {
+      dataOverviews.clear();
+      dataOverviews.addAll(DataApi.getDataOverviews());
+      allAmount = DataApi.getAllAmountData();
+    });
   }
 
   Future<bool> showDialogFunction(context) async {
@@ -123,7 +124,7 @@ class HomePageState extends State<HomePage> {
                       amountLast: 0,
                       chartData: [],
                     );
-                    DataApi.setDataOverview(controller.text, d);
+                    DataApi.setDataOverview(controller.text, d, 0);
                   }
                   Navigator.of(context).pop(true);
                 },

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../../api/api.dart';
 import '../../entity/data_overview.dart';
-import '../../test_cases.dart';
+import '../../entity/line_chart_data.dart';
+import '../../utils/math.dart';
 import '../chart/line_chart.dart';
 
-
-class DataOverviewCard extends StatelessWidget {
+class DataOverviewCard extends StatefulWidget{
   final DataOverview dataOverview;
   final bool enableEdit;
   final Function? deleteCallback;
@@ -19,6 +19,34 @@ class DataOverviewCard extends StatelessWidget {
     this.deleteCallback ,
     this.updateCallback,
   });
+
+  @override
+  State<StatefulWidget> createState() {
+    return DataOverviewCardState();
+  }
+
+}
+
+class DataOverviewCardState extends State<DataOverviewCard> {
+  late DataOverview dataOverview;
+  late bool enableEdit;
+  late Function? deleteCallback;
+  late Function? updateCallback;
+  double max = 0;
+  double min = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    dataOverview = widget.dataOverview;
+    enableEdit = widget.enableEdit;
+    deleteCallback = widget.deleteCallback;
+    updateCallback = widget.updateCallback;
+    List<double> result = MathUtils.lineChartDataMinMax(dataOverview.chartData);
+    min = result[0];
+    max = result[1];
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +86,26 @@ class DataOverviewCard extends StatelessWidget {
                     deleteCallback!();
                   }
                 }, icon: const Icon(Icons.delete, color: Colors.black,)),
+                IconButton(onPressed: () async {
+                  //chartData增加一条记录
+                  double amount = 0;
+                  if(context.mounted){
+                    amount = await showUpdateDialog(context);
+                  }
+                  if(amount == -1){
+                    return;
+                  }
+
+
+                  DataApi.setDataOverview(dataOverview.source,dataOverview,amount);
+
+                  List<double> result = MathUtils.lineChartDataMinMax(dataOverview.chartData);
+                  min = result[0];
+                  max = result[1];
+
+                  updateCallback!();
+                  setState(() {});
+                }, icon: const Icon(Icons.add, color: Colors.black,)),
               ]:[
                 Text(
                   dataOverview.source,
@@ -84,8 +132,8 @@ class DataOverviewCard extends StatelessWidget {
             Expanded(
               child: LineChart(
                 chartData: dataOverview.chartData,
-                min: TestCases.chartMin,
-                max: TestCases.chartMax,
+                min: min,
+                max: max,
                 canPop: false,
               ),
             )
@@ -112,6 +160,42 @@ class DataOverviewCard extends StatelessWidget {
             TextButton(onPressed: () {
               Navigator.of(context).pop(true);
             }, child: const Text("确定")),
+          ],
+        );
+      },
+    );
+    return b;
+  }
+
+  Future<double> showUpdateDialog(context) async {
+    TextEditingController controller = TextEditingController();
+    double b = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("添加一条记录"),
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(
+              labelText: '余额',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: const Text("取消"),
+            ),
+            TextButton(
+                onPressed: () {
+                  double amount = -1;
+                  if (controller.text.isNotEmpty) {
+                    amount = double.parse(controller.text);
+                  }
+                  Navigator.of(context).pop(amount);
+                },
+                child: const Text("确定")),
           ],
         );
       },

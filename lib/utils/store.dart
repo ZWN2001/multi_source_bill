@@ -8,11 +8,13 @@ import '../entity/data_overview.dart';
 /// Non-SQL K-V Storage
 class Store {
   static late Box _dataOverviewBox;
+  static late Box _allAmountBox;
 
   static bool _initialized = false;
 
   ///工具箱的持久化存储,key以 模块:key名称:类型 规范放入(类型仅作辅助判断)
   static Box get dataOverviewBox => _dataOverviewBox;
+  static Box get allAmountBox => _allAmountBox;
 
   static Future<void> initialize() async {
     if (_initialized) {
@@ -20,7 +22,8 @@ class Store {
     }
     String? subDir;
     await Hive.initFlutter(subDir);
-    _dataOverviewBox = await Hive.openBox('tool');
+    _dataOverviewBox = await Hive.openBox('dataOverviewBox');
+    _allAmountBox = await Hive.openBox('allAmountBox');
     _initialized = true;
   }
 
@@ -28,6 +31,7 @@ class Store {
     for (var element in TestCases.dataOverviews) {
       _dataOverviewBox.put(element.source, element.toJson());
     }
+    _allAmountBox.put('all', TestCases.all.toJson());
   }
 
   // static bool containsKey(String key) {

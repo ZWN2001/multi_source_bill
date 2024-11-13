@@ -2,13 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:multi_source_bill/utils/keep_alive.dart';
 
-
 import '../api/api.dart';
 import '../entity/data_overview.dart';
-import '../test_cases.dart';
 import '../widget/cards/data_overview_card.dart';
-
-
 
 class HomePage extends StatefulWidget {
   final ZoomDrawerController controller;
@@ -21,19 +17,22 @@ class HomePage extends StatefulWidget {
   }
 }
 
-
 class HomePageState extends State<HomePage> {
   late ZoomDrawerController zoomDrawerController;
   List<DataOverview> dataOverviews = [];
+  late DataOverview allAmount;
+
   @override
   void initState() {
     super.initState();
     zoomDrawerController = widget.controller;
     dataOverviews.addAll(DataApi.getDataOverviews());
+    allAmount = DataApi.getAllAmountData();
   }
+
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       body: NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return <Widget>[
@@ -44,10 +43,12 @@ class HomePageState extends State<HomePage> {
               pinned: true,
               flexibleSpace: FlexibleSpaceBar(
                   background: Container(
-                    margin: const EdgeInsets.fromLTRB(16, 64, 16, 0),
-                    child: DataOverviewCard(dataOverview: dataOverviews[0]),
-                  )
-              ),
+                margin: const EdgeInsets.fromLTRB(16, 64, 16, 0),
+                child: DataOverviewCard(
+                  dataOverview: allAmount,
+                  enableEdit: false,
+                ),
+              )),
             )
           ];
         },
@@ -56,19 +57,81 @@ class HomePageState extends State<HomePage> {
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (BuildContext context, int index) {
-            return KeepAliveWrapper(child: SizedBox(
+            return KeepAliveWrapper(
+                child: SizedBox(
               height: 200,
-              child: DataOverviewCard(dataOverview: dataOverviews[index+1]),
+              child: DataOverviewCard(
+                dataOverview: dataOverviews[index],
+                enableEdit: true,
+                deleteCallback: () {
+                  setState(() {
+                    dataOverviews.clear();
+                    dataOverviews.addAll(DataApi.getDataOverviews());
+                  });
+                },
+                updateCallback: () {
+                  dataOverviews.clear();
+                  dataOverviews.addAll(DataApi.getDataOverviews());
+                },
+              ),
             ));
           },
-          itemCount: dataOverviews.length - 1,
+          itemCount: dataOverviews.length,
         ),
       ),
-
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          bool result = await showDialogFunction(context);
+          if (result) {
+            setState(() {
+              dataOverviews.clear();
+              dataOverviews.addAll(DataApi.getDataOverviews());
+            });
+          }
+        },
+        child: const Icon(Icons.add),
+      ),
     );
-
   }
 
+  Future<bool> showDialogFunction(context) async {
+    TextEditingController controller = TextEditingController();
+    bool b = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("提示"),
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(
+              labelText: '收支源名称',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: const Text("取消"),
+            ),
+            TextButton(
+                onPressed: () {
+                  if (controller.text.isNotEmpty) {
+                    DataOverview d = DataOverview(
+                      source: controller.text,
+                      amount: 0,
+                      amountLast: 0,
+                      chartData: [],
+                    );
+                    DataApi.setDataOverview(controller.text, d);
+                  }
+                  Navigator.of(context).pop(true);
+                },
+                child: const Text("确定")),
+          ],
+        );
+      },
+    );
+    return b;
+  }
 }
-
-

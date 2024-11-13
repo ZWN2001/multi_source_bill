@@ -5,6 +5,7 @@ import '../utils/store.dart';
 
 class DataApi{
   static final Box _dataOverviewBox = Store.dataOverviewBox;
+  static final Box _allAmountBox = Store.allAmountBox;
 
   static DataOverview getDataOverview(String key, {String def = ""}) {
     var data = _dataOverviewBox.get(key, defaultValue: def);
@@ -37,5 +38,13 @@ class DataApi{
     for (var element in data) {
       _dataOverviewBox.put(element.source, element.toJson());
     }
+  }
+
+  static DataOverview getAllAmountData() {
+    return DataOverview.fromJson(_allAmountBox.get('all', defaultValue: ''));
+  }
+
+  static void setAllAmountData(DataOverview amount) {
+    _allAmountBox.put('all', amount);
   }
 }

@@ -28,9 +28,6 @@ class Store {
   }
 
   static void initData(){
-    for (var element in TestCases.dataOverviews) {
-      _dataOverviewBox.put(element.source, element.toJson());
-    }
     _allAmountBox.put('all', TestCases.all.toJson());
   }
 

@@ -8,7 +8,6 @@ import 'package:multi_source_bill/utils/store.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Store.initialize();
-  Store.initData();
   runApp(const MyApp());
 }
 

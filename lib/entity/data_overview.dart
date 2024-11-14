@@ -18,7 +18,10 @@ class DataOverview {
       source: json['source'],
       amount: json['amount'],
       amountLast: json['amountLast'],
-      chartData: (json['chartData'] as List).map((e) => LineChartData.fromJson(e)).toList(),
+      chartData: (json['chartData'] as List).map((e){
+        final Map<String, dynamic> data = Map<String, dynamic>.from(e as Map);
+        return LineChartData.fromJson(data);
+      }).toList(),
     );
   }
 

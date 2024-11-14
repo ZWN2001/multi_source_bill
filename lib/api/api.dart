@@ -18,7 +18,8 @@ class DataApi{
         chartData: [],
       );
     }
-    return DataOverview.fromJson(data);
+    final Map<String, dynamic> map = Map<String, dynamic>.from(data);
+    return DataOverview.fromJson(map);
   }
 
   static void setDataOverview(String key, DataOverview dataOverview, double amountNew) {
@@ -26,9 +27,11 @@ class DataApi{
       '${DateTime.now().month}-${DateTime.now().day}',
       amountNew,
     );
-    LineChartData dataLast = dataOverview.chartData.last;
-    if(dataLast.date == data.date){
-      dataOverview.chartData.removeLast();
+    if(dataOverview.chartData.isNotEmpty){
+      LineChartData dataLast = dataOverview.chartData.last;
+      if(dataLast.date == data.date){
+        dataOverview.chartData.removeLast();
+      }
     }
     dataOverview.chartData.add(data);
     dataOverview.amountLast = dataOverview.amount;
@@ -39,7 +42,6 @@ class DataApi{
   }
 
   static void _updateAll(DataOverview dataOverview, double amountNew) {
-    //TODO: update all amount data,这里还有bug，修正更新策略
     DataOverview all =  getAllAmountData();
     all.amountLast = all.amount;
     all.amount -= dataOverview.amountLast;
@@ -71,7 +73,13 @@ class DataApi{
 
 
   static List<DataOverview> getDataOverviews() {
-    return _dataOverviewBox.values.map((e) => DataOverview.fromJson(e)).toList();
+    if (_dataOverviewBox.isEmpty) {
+      return [];
+    }
+    return _dataOverviewBox.values.map((e) {
+      final Map<String, dynamic> data = Map<String, dynamic>.from(e as Map);
+      return DataOverview.fromJson(data);
+    }).toList();
   }
 
   static void setDataOverviews(List<DataOverview> data) {
@@ -82,7 +90,8 @@ class DataApi{
   }
 
   static DataOverview getAllAmountData() {
-    return DataOverview.fromJson(_allAmountBox.get('all', defaultValue: ''));
+    final Map<String, dynamic> data = Map<String, dynamic>.from(_allAmountBox.get('all') as Map);
+    return DataOverview.fromJson(data);
   }
 
   static void setAllAmountData(DataOverview amount) {

@@ -17,4 +17,9 @@ class LineChartData {
       'amount': amount,
     };
   }
+
+  @override
+  String toString() {
+    return 'LineChartData{date: $date, amount: $amount}';
+  }
 }

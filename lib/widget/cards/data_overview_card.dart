@@ -2,15 +2,14 @@ import 'package:flutter/material.dart';
 
 import '../../api/api.dart';
 import '../../entity/data_overview.dart';
-import '../../entity/line_chart_data.dart';
 import '../../utils/math.dart';
 import '../chart/line_chart.dart';
 
 class DataOverviewCard extends StatefulWidget{
   final DataOverview dataOverview;
   final bool enableEdit;
-  final Function? deleteCallback;
-  final Function? updateCallback;
+  final Function(DataOverview)? deleteCallback;
+  final Function(DataOverview)? updateCallback;
 
   const DataOverviewCard({
     super.key,
@@ -30,8 +29,8 @@ class DataOverviewCard extends StatefulWidget{
 class DataOverviewCardState extends State<DataOverviewCard> {
   late DataOverview dataOverview;
   late bool enableEdit;
-  late Function? deleteCallback;
-  late Function? updateCallback;
+  late Function(DataOverview)? deleteCallback;
+  late Function(DataOverview)? updateCallback;
   double max = 0;
   double min = 0;
 
@@ -83,7 +82,7 @@ class DataOverviewCardState extends State<DataOverviewCard> {
                   bool b = await showDialogFunction(context);
                   if (b) {
                     DataApi.deleteDataOverview(dataOverview.source);
-                    deleteCallback!();
+                    deleteCallback!(dataOverview);
                   }
                 }, icon: const Icon(Icons.delete, color: Colors.black,)),
                 IconButton(onPressed: () async {
@@ -102,8 +101,7 @@ class DataOverviewCardState extends State<DataOverviewCard> {
                   List<double> result = MathUtils.lineChartDataMinMax(dataOverview.chartData);
                   min = result[0];
                   max = result[1];
-
-                  updateCallback!();
+                  // updateCallback!(dataOverview);
                   setState(() {});
                 }, icon: const Icon(Icons.add, color: Colors.black,)),
               ]:[

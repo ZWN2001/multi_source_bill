@@ -26,54 +26,48 @@ class HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     zoomDrawerController = widget.controller;
-    dataOverviews.addAll(DataApi.getDataOverviews());
     allAmount = DataApi.getAllAmountData();
+    dataOverviews.add(allAmount);
+    dataOverviews.addAll(DataApi.getDataOverviews());
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: NestedScrollView(
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return <Widget>[
-            SliverAppBar(
-              expandedHeight: 200.0,
-              floating: true,
-              snap: false,
-              pinned: true,
-              flexibleSpace: FlexibleSpaceBar(
-                  background: Container(
-                margin: const EdgeInsets.fromLTRB(16, 64, 16, 0),
-                child: DataOverviewCard(
-                  dataOverview: allAmount,
-                  enableEdit: false,
-                ),
-              )),
-            )
-          ];
-        },
-        body: ListView.builder(
+      appBar: AppBar(
+        title: const Text("首页"),
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () {
+            zoomDrawerController.toggle!();
+          },
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: ListView.builder(
           shrinkWrap: true,
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (BuildContext context, int index) {
-            return KeepAliveWrapper(
-                child: SizedBox(
+            return SizedBox(
               height: 240,
               child: DataOverviewCard(
                 dataOverview: dataOverviews[index],
-                enableEdit: true,
-                deleteCallback: () {
-                  refresh();
+                enableEdit: index != 0,
+                deleteCallback: (DataOverview dataOverview) {
+                  dataOverviews.removeAt(index);
+                  setState(() {});
+                  // refresh();
                 },
-                updateCallback: () {
-                  refresh();
-                },
+                // updateCallback: (DataOverview dataOverview) {
+                //   // dataOverviews[index] = dataOverview;
+                // },
               ),
-            ));
+            );
           },
           itemCount: dataOverviews.length,
         ),
+
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -88,11 +82,11 @@ class HomePageState extends State<HomePage> {
   }
 
   void refresh(){
-    setState(() {
-      dataOverviews.clear();
-      dataOverviews.addAll(DataApi.getDataOverviews());
-      allAmount = DataApi.getAllAmountData();
-    });
+    dataOverviews.clear();
+    allAmount = DataApi.getAllAmountData();
+    dataOverviews.add(allAmount);
+    dataOverviews.addAll(DataApi.getDataOverviews());
+    setState(() {});
   }
 
   Future<bool> showDialogFunction(context) async {

@@ -26,20 +26,32 @@ class DataApi{
       '${DateTime.now().month}-${DateTime.now().day}',
       amountNew,
     );
+    LineChartData dataLast = dataOverview.chartData.last;
+    if(dataLast.date == data.date){
+      dataOverview.chartData.removeLast();
+    }
     dataOverview.chartData.add(data);
     dataOverview.amountLast = dataOverview.amount;
     dataOverview.amount = amountNew;
     _dataOverviewBox.put(key, dataOverview.toJson());
 
+    _updateAll(dataOverview, amountNew);
+  }
+
+  static void _updateAll(DataOverview dataOverview, double amountNew) {
     //TODO: update all amount data,这里还有bug，修正更新策略
     DataOverview all =  getAllAmountData();
     all.amountLast = all.amount;
     all.amount -= dataOverview.amountLast;
     all.amount += amountNew;
-    data = LineChartData(
+    LineChartData data = LineChartData(
       '${DateTime.now().month}-${DateTime.now().day}',
       all.amount,
     );
+    LineChartData dataLast = all.chartData.last;
+    if(dataLast.date == data.date){
+      all.chartData.removeLast();
+    }
     all.chartData.add(data);
     setAllAmountData(all);
   }

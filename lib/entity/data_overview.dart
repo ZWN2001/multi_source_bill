@@ -31,4 +31,9 @@ class DataOverview {
     };
   }
 
+  @override
+  String toString() {
+    return 'DataOverview{source: $source, amount: $amount, amountLast: $amountLast}';
+  }
+
 }

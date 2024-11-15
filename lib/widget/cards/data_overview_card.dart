@@ -23,6 +23,9 @@ class DataOverviewCard extends StatelessWidget{
   Widget build(BuildContext context) {
     double max = 0;
     double min = 0;
+    List<double> result = MathUtils.lineChartDataMinMax(dataOverview.chartData);
+    min = result[0];
+    max = result[1];
     double trending = dataOverview.amount - dataOverview.amountLast;
     return Card(
       child: Container(
@@ -74,8 +77,8 @@ class DataOverviewCard extends StatelessWidget{
                   List<double> result = MathUtils.lineChartDataMinMax(dataOverview.chartData);
                   min = result[0];
                   max = result[1];
-                  // updateCallback!(dataOverview);
-                  // setState(() {});
+                  updateCallback!(dataOverview);
+                  // setState((/) {});
                 }, icon: const Icon(Icons.add, color: Colors.black,)),
               ]:[
                 Text(

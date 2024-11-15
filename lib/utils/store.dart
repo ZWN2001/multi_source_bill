@@ -25,10 +25,15 @@ class Store {
     _dataOverviewBox = await Hive.openBox('dataOverviewBox');
     _allAmountBox = await Hive.openBox('allAmountBox');
     _initialized = true;
+    // initData();
   }
 
   static void initData(){
-    _allAmountBox.put('all', TestCases.all.toJson());
+    DataOverview all =DataOverview(amount: 0, amountLast: 0,chartData: [], source: '总');
+    _allAmountBox.put('all', all.toJson());
+    for (var element in TestCases.dataOverviews) {
+      _dataOverviewBox.put(element.source, element.toJson());
+    }
   }
 
   // static bool containsKey(String key) {

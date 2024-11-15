@@ -3,7 +3,7 @@ import 'entity/line_chart_data.dart';
 
 class TestCases{
 
-  static DataOverview all =DataOverview(amount: 1300.0, amountLast: 1100,chartData: chartData, source: '总');
+  static DataOverview all =DataOverview(amount: 0, amountLast: 0,chartData: [], source: '总');
   static List<LineChartData> chartData = [
     LineChartData(
        '1',

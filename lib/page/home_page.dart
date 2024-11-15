@@ -41,9 +41,9 @@ class HomePage extends StatelessWidget {
                   deleteCallback: (DataOverview dataOverview) {
                     homePageController.onDeleteCall(index);
                   },
-                  // updateCallback: (DataOverview dataOverview) {
-                  //   // dataOverviews[index] = dataOverview;
-                  // },
+                  updateCallback: (DataOverview dataOverview) {
+                    homePageController.onUpdateCall(index, dataOverview);
+                  },
                 ),
               );
             },
@@ -130,6 +130,13 @@ class HomePageController extends GetxController{
 
   void onDeleteCall(int index){
     dataOverviews.removeAt(index);
+    update();
+  }
+
+  void onUpdateCall(int index,DataOverview dataOverview){
+    allAmount = DataApi.getAllAmountData();
+    dataOverviews[0] = allAmount;
+    dataOverviews[index] = dataOverview;
     update();
   }
 

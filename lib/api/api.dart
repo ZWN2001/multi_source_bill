@@ -50,9 +50,11 @@ class DataApi{
       '${DateTime.now().month}-${DateTime.now().day}',
       all.amount,
     );
-    LineChartData dataLast = all.chartData.last;
-    if(dataLast.date == data.date){
-      all.chartData.removeLast();
+    if(all.chartData.isNotEmpty){
+      LineChartData dataLast = all.chartData.last;
+      if(dataLast.date == data.date){
+        all.chartData.removeLast();
+      }
     }
     all.chartData.add(data);
     setAllAmountData(all);

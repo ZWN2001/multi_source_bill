@@ -1,16 +1,7 @@
 # multi_source_bill
 
-A new Flutter project.
+TODO 
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- [ ] 删除投资源时在总数据中删除对应金额
+- [ ] 迁移存储到数据库
+- [ ] 更详细的数据展示（新开界面）

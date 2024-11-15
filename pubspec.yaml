@@ -38,6 +38,7 @@ dependencies:
   flutter_zoom_drawer: ^3.2.0
   syncfusion_flutter_charts: ^27.1.58
   hive_flutter: ^1.1.0
+  get: ^4.6.6
 
 dev_dependencies:
   flutter_test:

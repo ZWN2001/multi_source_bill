@@ -5,7 +5,7 @@ import '../../entity/data_overview.dart';
 import '../../utils/math.dart';
 import '../chart/line_chart.dart';
 
-class DataOverviewCard extends StatefulWidget{
+class DataOverviewCard extends StatelessWidget{
   final DataOverview dataOverview;
   final bool enableEdit;
   final Function(DataOverview)? deleteCallback;
@@ -20,35 +20,9 @@ class DataOverviewCard extends StatefulWidget{
   });
 
   @override
-  State<StatefulWidget> createState() {
-    return DataOverviewCardState();
-  }
-
-}
-
-class DataOverviewCardState extends State<DataOverviewCard> {
-  late DataOverview dataOverview;
-  late bool enableEdit;
-  late Function(DataOverview)? deleteCallback;
-  late Function(DataOverview)? updateCallback;
-  double max = 0;
-  double min = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    dataOverview = widget.dataOverview;
-    enableEdit = widget.enableEdit;
-    deleteCallback = widget.deleteCallback;
-    updateCallback = widget.updateCallback;
-    List<double> result = MathUtils.lineChartDataMinMax(dataOverview.chartData);
-    min = result[0];
-    max = result[1];
-  }
-
-
-  @override
   Widget build(BuildContext context) {
+    double max = 0;
+    double min = 0;
     double trending = dataOverview.amount - dataOverview.amountLast;
     return Card(
       child: Container(
@@ -89,12 +63,11 @@ class DataOverviewCardState extends State<DataOverviewCard> {
                   //chartData增加一条记录
                   double amount = 0;
                   if(context.mounted){
-                    amount = await showUpdateDialog(context);
+                    amount = await showUpdateDialog(context) ?? -1;
                   }
                   if(amount == -1){
                     return;
                   }
-
 
                   DataApi.setDataOverview(dataOverview.source,dataOverview,amount);
 
@@ -102,7 +75,7 @@ class DataOverviewCardState extends State<DataOverviewCard> {
                   min = result[0];
                   max = result[1];
                   // updateCallback!(dataOverview);
-                  setState(() {});
+                  // setState(() {});
                 }, icon: const Icon(Icons.add, color: Colors.black,)),
               ]:[
                 Text(
@@ -165,9 +138,9 @@ class DataOverviewCardState extends State<DataOverviewCard> {
     return b;
   }
 
-  Future<double> showUpdateDialog(context) async {
+  Future<double?> showUpdateDialog(context) async {
     TextEditingController controller = TextEditingController();
-    double b = await showDialog(
+    double? b = await showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(

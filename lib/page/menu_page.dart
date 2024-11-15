@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'add_amount_data_page.dart';
-import 'add_data_item_page.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({super.key});

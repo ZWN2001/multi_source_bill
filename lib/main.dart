@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
+import 'package:get/get.dart';
 import 'package:multi_source_bill/page/home_page.dart';
 import 'package:multi_source_bill/page/menu_page.dart';
 import 'package:multi_source_bill/utils/store.dart';
@@ -8,6 +9,7 @@ import 'package:multi_source_bill/utils/store.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Store.initialize();
+  Get.lazyPut(()=>HomePageController());
   runApp(const MyApp());
 }
 
@@ -16,7 +18,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,

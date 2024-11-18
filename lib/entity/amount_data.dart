@@ -18,6 +18,13 @@ class AmountData {
     };
   }
 
+  Map<String, dynamic> toMap() {
+    return {
+      'date': date,
+      'amount': amount,
+    };
+  }
+
   @override
   String toString() {
     return 'LineChartData{date: $date, amount: $amount}';

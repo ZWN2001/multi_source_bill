@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:multi_source_bill/api/db_api.dart';
 
-import '../../api/api.dart';
 import '../../entity/data_overview.dart';
 import '../../utils/math.dart';
 import '../chart/line_chart.dart';
@@ -58,7 +58,7 @@ class DataOverviewCard extends StatelessWidget{
                 IconButton(onPressed: () async {
                   bool b = await showDialogFunction(context);
                   if (b) {
-                    //TODO DataApi.deleteDataOverview(dataOverview.source);
+                    DBApi.deleteSource(dataOverview.source.id);
                     deleteCallback!(dataOverview);
                   }
                 }, icon: const Icon(Icons.delete, color: Colors.black,)),
@@ -78,7 +78,6 @@ class DataOverviewCard extends StatelessWidget{
                   min = result[0];
                   max = result[1];
                   updateCallback!(dataOverview);
-                  // setState((/) {});
                 }, icon: const Icon(Icons.add, color: Colors.black,)),
               ]:[
                 Text(

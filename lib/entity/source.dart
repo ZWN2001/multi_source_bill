@@ -22,6 +22,14 @@ class Source {
     };
   }
 
+  //toMap
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'source_name': sourceName,
+    };
+  }
+
   @override
   String toString() {
     return 'Source{id: $id, sourceName: $sourceName}';

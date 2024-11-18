@@ -6,9 +6,9 @@ import '../entity/source.dart';
 import '../utils/db.dart';
 
 class DBApi{
-  Database? _database = DB().database;
+  static Database? _database = DB().database;
 
-  Future<List<Source>> getSources() async{
+  static Future<List<Source>> getSources() async{
     if(_database == null){
       await DB.initialize();
       _database = DB().database;
@@ -25,7 +25,7 @@ class DBApi{
     return sources;
   }
 
-  Future<List<AmountData>> getAmountData(int sourceId,{int? limit}) async {
+  static Future<List<AmountData>> getAmountData(int sourceId,{int? limit}) async {
     if(_database == null){
       await DB.initialize();
       _database = DB().database;
@@ -47,7 +47,7 @@ class DBApi{
     return amountData;
   }
 
-  Future<List<DataOverview>> getDataOverview() async {
+  static Future<List<DataOverview>> getDataOverview() async {
     List<Source> sources = await getSources();
     List<DataOverview> dataOverviews = [];
     for (Source source in sources) {
@@ -64,7 +64,7 @@ class DBApi{
   }
 
   //获取amount和amountLast
-  List getAmount(List<AmountData> amountData){
+  static List getAmount(List<AmountData> amountData){
     List<double> res = [];
     double amount = 0;
     double amountLast = 0;
@@ -79,6 +79,19 @@ class DBApi{
     res.add(amount);
     res.add(amountLast);
     return res;
+  }
+
+  static void addSource(Source source){
+    _database!.insert('Sources', source.toMap());
+  }
+
+  static void deleteSource(int id){
+    _database!.delete('Sources', where: 'id = ?', whereArgs: [id]);
+    _database!.delete('AmountData', where: 'source_id = ?', whereArgs: [id]);
+  }
+
+  static void addAmountData(AmountData amountData){
+    _database!.insert('AmountData', amountData.toMap());
   }
 
 }

@@ -3,7 +3,6 @@ import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:get/get.dart';
 import 'package:multi_source_bill/api/db_api.dart';
 
-import '../api/api.dart';
 import '../entity/data_overview.dart';
 import '../entity/source.dart';
 import '../widget/cards/data_overview_card.dart';
@@ -93,13 +92,7 @@ class HomePage extends StatelessWidget {
                     Source s = Source(
                       sourceName: controller.text, id: 0,
                     );
-                    DataOverview d = DataOverview(
-                      source: s,
-                      amount: 0,
-                      amountLast: 0,
-                      chartData: [],
-                    );
-                    //TODO DataApi.setDataOverview(controller.text, d, 0);
+                    DBApi.addSource(s);
                   }
                   Navigator.of(context).pop(true);
                 },
@@ -118,19 +111,14 @@ class HomePageController extends GetxController{
   late DataOverview allAmount;
 
   @override
-  void onInit() {
+  Future<void> onInit() async{
     super.onInit();
-    // allAmount = DataApi.getAllAmountData();
-    // dataOverviews.add(allAmount);
-    // dataOverviews.addAll(DataApi.getDataOverviews());
-    print(DBApi().getSources());
+    dataOverviews.addAll(await DBApi.getDataOverview());
   }
 
-  void refreshData(){
+  Future<void> refreshData() async {
     dataOverviews.clear();
-    //TODO allAmount = DataApi.getAllAmountData();
-    dataOverviews.add(allAmount);
-    // dataOverviews.addAll(DataApi.getDataOverviews());
+    dataOverviews.addAll(await DBApi.getDataOverview());
     update();
   }
 
@@ -139,11 +127,8 @@ class HomePageController extends GetxController{
     update();
   }
 
-  void onUpdateCall(int index,DataOverview dataOverview){
-    //TODO allAmount = DataApi.getAllAmountData();
-    dataOverviews[0] = allAmount;
-    dataOverviews[index] = dataOverview;
-    update();
+  Future<void> onUpdateCall(int index,DataOverview dataOverview) async {
+    refreshData();
   }
 
 }

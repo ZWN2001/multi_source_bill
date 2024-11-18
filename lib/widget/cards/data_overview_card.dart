@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:multi_source_bill/api/db_api.dart';
 
+import '../../entity/amount_data.dart';
 import '../../entity/data_overview.dart';
 import '../../utils/math.dart';
 import '../chart/line_chart.dart';
@@ -72,7 +73,12 @@ class DataOverviewCard extends StatelessWidget{
                     return;
                   }
 
-                  //TODO DataApi.setDataOverview(dataOverview.source,dataOverview,amount);
+                  DBApi.addAmountData(
+                      dataOverview.source.id,
+                      AmountData(
+                    '${DateTime.now().month}-${DateTime.now().day}',
+                    amount,
+                  ));
 
                   List<double> result = MathUtils.lineChartDataMinMax(dataOverview.chartData);
                   min = result[0];

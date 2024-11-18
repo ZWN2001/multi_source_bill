@@ -90,8 +90,8 @@ class DBApi{
     _database!.delete('AmountData', where: 'source_id = ?', whereArgs: [id]);
   }
 
-  static void addAmountData(AmountData amountData){
-    _database!.insert('AmountData', amountData.toMap());
+  static void addAmountData(int sourceId, AmountData amountData){
+    _database!.insert('AmountData', amountData.toMap()..['source_id'] = sourceId);
   }
 
 }

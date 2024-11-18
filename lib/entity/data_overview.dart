@@ -1,10 +1,12 @@
-import 'line_chart_data.dart';
+import 'package:multi_source_bill/entity/source.dart';
+
+import 'amount_data.dart';
 
 class DataOverview {
-  final String source;
+  final Source source;
   double amount;
   double amountLast;
-  final List<LineChartData> chartData;
+  final List<AmountData> chartData;
 
   DataOverview({
     required this.source,
@@ -15,19 +17,19 @@ class DataOverview {
 
   factory DataOverview.fromJson(Map<String, dynamic> json) {
     return DataOverview(
-      source: json['source'],
+      source: Source.fromJson(json['source']),
       amount: json['amount'],
       amountLast: json['amountLast'],
       chartData: (json['chartData'] as List).map((e){
         final Map<String, dynamic> data = Map<String, dynamic>.from(e as Map);
-        return LineChartData.fromJson(data);
+        return AmountData.fromJson(data);
       }).toList(),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'source': source,
+      'source': source.toJson(),
       'amount': amount,
       'amountLast': amountLast,
       'chartData': chartData.map((e) => e.toJson()).toList(),

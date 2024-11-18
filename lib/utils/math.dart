@@ -1,4 +1,4 @@
-import '../entity/line_chart_data.dart';
+import '../entity/amount_data.dart';
 
 class MathUtils{
   static double min(List<double> list){
@@ -21,7 +21,7 @@ class MathUtils{
     return max;
   }
 
-  static List<double> lineChartDataMinMax(List<LineChartData> list){
+  static List<double> lineChartDataMinMax(List<AmountData> list){
     List<double> result = [];
     List<double> data = [];
     for (int i = 0; i < list.length; i++) {

@@ -3,13 +3,13 @@ import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:get/get.dart';
 import 'package:multi_source_bill/page/home_page.dart';
 import 'package:multi_source_bill/page/menu_page.dart';
-import 'package:multi_source_bill/utils/store.dart';
+import 'package:multi_source_bill/utils/db.dart';
 
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Store.initialize();
   Get.lazyPut(()=>HomePageController());
+  DB.initialize();
   runApp(const MyApp());
 }
 

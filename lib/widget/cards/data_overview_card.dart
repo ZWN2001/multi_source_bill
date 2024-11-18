@@ -39,7 +39,7 @@ class DataOverviewCard extends StatelessWidget{
               mainAxisSize: MainAxisSize.min,
               children: enableEdit?[
                 Text(
-                  dataOverview.source,
+                  dataOverview.source.sourceName,
                   style: const TextStyle(fontSize: 18),
                 ),
                 const SizedBox(width: 36,),
@@ -58,7 +58,7 @@ class DataOverviewCard extends StatelessWidget{
                 IconButton(onPressed: () async {
                   bool b = await showDialogFunction(context);
                   if (b) {
-                    DataApi.deleteDataOverview(dataOverview.source);
+                    //TODO DataApi.deleteDataOverview(dataOverview.source);
                     deleteCallback!(dataOverview);
                   }
                 }, icon: const Icon(Icons.delete, color: Colors.black,)),
@@ -72,7 +72,7 @@ class DataOverviewCard extends StatelessWidget{
                     return;
                   }
 
-                  DataApi.setDataOverview(dataOverview.source,dataOverview,amount);
+                  //TODO DataApi.setDataOverview(dataOverview.source,dataOverview,amount);
 
                   List<double> result = MathUtils.lineChartDataMinMax(dataOverview.chartData);
                   min = result[0];
@@ -82,7 +82,7 @@ class DataOverviewCard extends StatelessWidget{
                 }, icon: const Icon(Icons.add, color: Colors.black,)),
               ]:[
                 Text(
-                  dataOverview.source,
+                  dataOverview.source.sourceName,
                   style: const TextStyle(fontSize: 18),
                 ),
                 Expanded(child: Container()),

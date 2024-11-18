@@ -1,11 +1,11 @@
-class LineChartData {
-  LineChartData(this.date, this.amount);
+class AmountData {
+  AmountData(this.date, this.amount);
 
   String date;
   double amount;
 
-  factory LineChartData.fromJson(Map<String, dynamic> json) {
-    return LineChartData(
+  factory AmountData.fromJson(Map<String, dynamic> json) {
+    return AmountData(
       json['date'],
       json['amount'],
     );

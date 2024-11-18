@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-import '../../entity/line_chart_data.dart';
+import '../../entity/amount_data.dart';
 
 class LineChart extends StatelessWidget {
-  final List<LineChartData> chartData;
+  final List<AmountData> chartData;
   final double min;
   final double max;
   final bool canPop;
@@ -77,14 +77,14 @@ class LineChart extends StatelessWidget {
     );
   }
 
-  List<LineSeries<LineChartData, String>> _getDashedLineSeries() {
-    return <LineSeries<LineChartData, String>>[
-      LineSeries<LineChartData, String>(
+  List<LineSeries<AmountData, String>> _getDashedLineSeries() {
+    return <LineSeries<AmountData, String>>[
+      LineSeries<AmountData, String>(
         animationDuration: 2500,
         dashArray: const <double>[15, 3, 3, 3],
         dataSource: chartData,
-        xValueMapper: (LineChartData sales, _) => sales.date,
-        yValueMapper: (LineChartData sales, _) => sales.amount,
+        xValueMapper: (AmountData sales, _) => sales.date,
+        yValueMapper: (AmountData sales, _) => sales.amount,
         width: 2,
         name: '金额',
         dataLabelSettings: const DataLabelSettings(

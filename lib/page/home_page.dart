@@ -5,6 +5,7 @@ import 'package:multi_source_bill/api/db_api.dart';
 
 import '../entity/data_overview.dart';
 import '../entity/source.dart';
+import '../utils/db.dart';
 import '../widget/cards/data_overview_card.dart';
 
 class HomePage extends StatelessWidget {
@@ -113,6 +114,7 @@ class HomePageController extends GetxController{
   @override
   Future<void> onInit() async{
     super.onInit();
+    await DB.initialize();
     dataOverviews.addAll(await DBApi.getDataOverview());
   }
 

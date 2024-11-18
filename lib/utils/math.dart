@@ -22,6 +22,9 @@ class MathUtils{
   }
 
   static List<double> lineChartDataMinMax(List<AmountData> list){
+    if(list.isEmpty){
+      return [0,0];
+    }
     List<double> result = [];
     List<double> data = [];
     for (int i = 0; i < list.length; i++) {

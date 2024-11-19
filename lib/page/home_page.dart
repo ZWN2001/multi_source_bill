@@ -117,7 +117,6 @@ class HomePageController extends GetxController{
   Future<void> onInit() async{
     super.onInit();
     await DB.initialize();
-    DBApi.cleanDB();
     dataOverviews.addAll(await DBApi.getDataOverview());
     update();
   }
@@ -129,8 +128,7 @@ class HomePageController extends GetxController{
   }
 
   void onDeleteCall(int index){
-    dataOverviews.removeAt(index);
-    update();
+    refreshData();
   }
 
   Future<void> onUpdateCall(int index,DataOverview dataOverview) async {

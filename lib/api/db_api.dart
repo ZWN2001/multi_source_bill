@@ -91,7 +91,7 @@ class DBApi{
     List<AmountData> amountData = await getAmountData(id);
     await _database!.delete('Sources', where: 'id = ?', whereArgs: [id]);
     await _database!.delete('AmountData', where: 'source_id = ?', whereArgs: [id]);
-    //TODO:删除source时，更新总amount
+
     int minSourceId = await getMinSourceId();
     for(AmountData item in amountData){
       double amountInAll = await getAmountByDateTime(minSourceId, item.dateTime)??0;
@@ -99,8 +99,11 @@ class DBApi{
         await _database!.delete(
             'AmountData', where: 'source_id = ? and date_time = ?',
             whereArgs: [minSourceId, item.dateTime]);
-      }else{
-        await _database!.update('AmountData', {'amount': amountInAll - item.amount}, where: 'source_id = ? and date_time = ?', whereArgs: [minSourceId, item.dateTime]);
+      }else {
+        await _database!.update(
+            'AmountData', {'amount': amountInAll - item.amount},
+            where: 'source_id = ? and date_time = ?',
+            whereArgs: [minSourceId, item.dateTime]);
       }
     }
   }

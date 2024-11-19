@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/foundation.dart';
 import 'package:multi_source_bill/entity/amount_data.dart';
 import 'package:multi_source_bill/entity/data_overview.dart';
@@ -90,33 +88,55 @@ class DBApi{
   }
 
   static Future<void> deleteSource(int id) async {
+    List<AmountData> amountData = await getAmountData(id);
     await _database!.delete('Sources', where: 'id = ?', whereArgs: [id]);
     await _database!.delete('AmountData', where: 'source_id = ?', whereArgs: [id]);
     //TODO:删除source时，更新总amount
+    int minSourceId = await getMinSourceId();
+    for(AmountData item in amountData){
+      double amountInAll = await getAmountByDateTime(minSourceId, item.dateTime)??0;
+      if(amountInAll - item.amount == 0) {
+        await _database!.delete(
+            'AmountData', where: 'source_id = ? and date_time = ?',
+            whereArgs: [minSourceId, item.dateTime]);
+      }else{
+        await _database!.update('AmountData', {'amount': amountInAll - item.amount}, where: 'source_id = ? and date_time = ?', whereArgs: [minSourceId, item.dateTime]);
+      }
+    }
   }
 
   static Future<void> addAmountData(int sourceId, AmountData amountData) async {
     //获取原有的amount并删除
-    double amountOld = await getAmountByDateTime(sourceId, amountData.dateTime);
-    await _database!.delete('AmountData', where: 'source_id = ? and date_time = ?', whereArgs: [sourceId, amountData.dateTime]);
+    double amountOld = await getAmountByDateTime(sourceId, amountData.dateTime)??0;
+    await _database!.delete(
+        'AmountData', where: 'source_id = ? and date_time = ?',
+        whereArgs: [sourceId, amountData.dateTime]);
     //插入新的amountData
-    await _database!.insert('AmountData', {'source_id': sourceId}..addAll(amountData.toMap()));
+    await _database!.insert(
+        'AmountData', {'source_id': sourceId}..addAll(amountData.toMap()));
     //更新总amount
     int minSourceId = await getMinSourceId();
     print('minSourceId: $minSourceId');
-    double amountInAll = await getAmountByDateTime(minSourceId,amountData.dateTime);
-    if(amountInAll == 0){
-      await _database!.delete('AmountData', where: 'source_id = ? and date_time = ?', whereArgs: [minSourceId, amountData.dateTime]);
-      await _database!.insert('AmountData', {'source_id': minSourceId, 'date_time': amountData.dateTime, 'amount': amountData.amount});
-    }else{
-      await  _database!.update('AmountData', {'amount': amountInAll + amountData.amount}, where: 'source_id = ? and date_time = ?', whereArgs: [minSourceId, amountData.dateTime]);
+    double? amountInAll = await getAmountByDateTime(
+        minSourceId, amountData.dateTime);
+    if (amountInAll == null) {
+      await _database!.insert('AmountData', {
+        'source_id': minSourceId,
+        'date_time': amountData.dateTime,
+        'amount': amountData.amount
+      });
+    } else {
+      await _database!.update(
+          'AmountData', {'amount': amountInAll - amountOld + amountData.amount},
+          where: 'source_id = ? and date_time = ?',
+          whereArgs: [minSourceId, amountData.dateTime]);
     }
   }
 
-  static Future<double> getAmountByDateTime(int sourceId, String dateTime){
+  static Future<double?> getAmountByDateTime(int sourceId, String dateTime){
     return _database!.query('AmountData', where: 'source_id = ? and date_time = ?', whereArgs: [sourceId, dateTime]).then((value){
       if(value.isEmpty){
-        return 0.0;
+        return null;
       }else{
         return value[0]['amount'] as double;
       }

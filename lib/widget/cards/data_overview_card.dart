@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:multi_source_bill/api/db_api.dart';
 
 import '../../entity/amount_data.dart';
@@ -65,11 +66,11 @@ class DataOverviewCard extends StatelessWidget{
                 }, icon: const Icon(Icons.delete, color: Colors.black,)),
                 IconButton(onPressed: () async {
                   //chartData增加一条记录
-                  double amount = 0;
+                  double? amount = 0;
                   if(context.mounted){
-                    amount = await showUpdateDialog(context) ?? -1;
+                    amount = await showUpdateDialog(context);
                   }
-                  if(amount == -1){
+                  if(amount == null){
                     return;
                   }
 
@@ -158,11 +159,15 @@ class DataOverviewCard extends StatelessWidget{
             decoration: const InputDecoration(
               labelText: '余额',
             ),
+            keyboardType: TextInputType.number,
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))//设置只允许输入数字
+            ],
           ),
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(false);
+                Navigator.of(context).pop();
               },
               child: const Text("取消"),
             ),

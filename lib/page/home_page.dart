@@ -76,6 +76,7 @@ class HomePage extends StatelessWidget {
           title: const Text("提示"),
           content: TextField(
             controller: controller,
+            maxLength: 64,
             decoration: const InputDecoration(
               labelText: '收支源名称',
             ),

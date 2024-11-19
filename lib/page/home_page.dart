@@ -116,6 +116,7 @@ class HomePageController extends GetxController{
     super.onInit();
     await DB.initialize();
     dataOverviews.addAll(await DBApi.getDataOverview());
+    update();
   }
 
   Future<void> refreshData() async {

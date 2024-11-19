@@ -22,7 +22,7 @@ class DBApi{
       ));
     }
 
-    return sources;
+    return sources.reversed.toList();
   }
 
   static Future<List<AmountData>> getAmountData(int sourceId,{int? limit}) async {
@@ -40,7 +40,7 @@ class DBApi{
     }
     for (Map item in res) {
       amountData.add(AmountData(
-        item['date'],
+        item['date_time'],
         item['amount'],
       ));
     }
@@ -69,7 +69,7 @@ class DBApi{
     double amount = 0;
     double amountLast = 0;
     //amountData按时间排序
-    amountData.sort((a, b) => a.date.compareTo(b.date));
+    amountData.sort((a, b) => a.dateTime.compareTo(b.dateTime));
     if(amountData.isNotEmpty){
       amount = amountData.last.amount;
       if(amountData.length > 1){
@@ -91,7 +91,7 @@ class DBApi{
   }
 
   static void addAmountData(int sourceId, AmountData amountData){
-    _database!.insert('AmountData', amountData.toMap()..['source_id'] = sourceId);
+    _database!.insert('AmountData', {'source_id': sourceId}..addAll(amountData.toMap()));
   }
 
 }

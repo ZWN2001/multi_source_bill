@@ -83,7 +83,7 @@ class LineChart extends StatelessWidget {
         animationDuration: 2500,
         dashArray: const <double>[15, 3, 3, 3],
         dataSource: chartData,
-        xValueMapper: (AmountData sales, _) => sales.date,
+        xValueMapper: (AmountData sales, _) => sales.dateTime,
         yValueMapper: (AmountData sales, _) => sales.amount,
         width: 2,
         name: '金额',

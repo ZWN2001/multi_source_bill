@@ -1,3 +1,6 @@
+import 'dart:ffi';
+
+import 'package:flutter/foundation.dart';
 import 'package:multi_source_bill/entity/amount_data.dart';
 import 'package:multi_source_bill/entity/data_overview.dart';
 import 'package:sqflite/sqflite.dart';
@@ -22,7 +25,7 @@ class DBApi{
       ));
     }
 
-    return sources.reversed.toList();
+    return sources;
   }
 
   static Future<List<AmountData>> getAmountData(int sourceId,{int? limit}) async {
@@ -49,10 +52,11 @@ class DBApi{
 
   static Future<List<DataOverview>> getDataOverview() async {
     List<Source> sources = await getSources();
+    print('sources: $sources');
     List<DataOverview> dataOverviews = [];
     for (Source source in sources) {
       List<AmountData> amountData = await getAmountData(source.id, limit: 5);
-      List amount = getAmount(amountData);
+      List amount = getAmountAndLast(amountData);
       dataOverviews.add(DataOverview(
         source: source,
         amount: amount[0],
@@ -64,7 +68,7 @@ class DBApi{
   }
 
   //获取amount和amountLast
-  static List getAmount(List<AmountData> amountData){
+  static List getAmountAndLast(List<AmountData> amountData){
     List<double> res = [];
     double amount = 0;
     double amountLast = 0;
@@ -81,17 +85,71 @@ class DBApi{
     return res;
   }
 
-  static void addSource(Source source){
-    _database!.insert('Sources', source.toMap());
+  static Future<void> addSource(Source source) async {
+    await _database!.insert('Sources', source.toMap());
   }
 
-  static void deleteSource(int id){
-    _database!.delete('Sources', where: 'id = ?', whereArgs: [id]);
-    _database!.delete('AmountData', where: 'source_id = ?', whereArgs: [id]);
+  static Future<void> deleteSource(int id) async {
+    await _database!.delete('Sources', where: 'id = ?', whereArgs: [id]);
+    await _database!.delete('AmountData', where: 'source_id = ?', whereArgs: [id]);
+    //TODO:删除source时，更新总amount
   }
 
-  static void addAmountData(int sourceId, AmountData amountData){
-    _database!.insert('AmountData', {'source_id': sourceId}..addAll(amountData.toMap()));
+  static Future<void> addAmountData(int sourceId, AmountData amountData) async {
+    //获取原有的amount并删除
+    double amountOld = await getAmountByDateTime(sourceId, amountData.dateTime);
+    await _database!.delete('AmountData', where: 'source_id = ? and date_time = ?', whereArgs: [sourceId, amountData.dateTime]);
+    //插入新的amountData
+    await _database!.insert('AmountData', {'source_id': sourceId}..addAll(amountData.toMap()));
+    //更新总amount
+    int minSourceId = await getMinSourceId();
+    print('minSourceId: $minSourceId');
+    double amountInAll = await getAmountByDateTime(minSourceId,amountData.dateTime);
+    if(amountInAll == 0){
+      await _database!.delete('AmountData', where: 'source_id = ? and date_time = ?', whereArgs: [minSourceId, amountData.dateTime]);
+      await _database!.insert('AmountData', {'source_id': minSourceId, 'date_time': amountData.dateTime, 'amount': amountData.amount});
+    }else{
+      await  _database!.update('AmountData', {'amount': amountInAll + amountData.amount}, where: 'source_id = ? and date_time = ?', whereArgs: [minSourceId, amountData.dateTime]);
+    }
+  }
+
+  static Future<double> getAmountByDateTime(int sourceId, String dateTime){
+    return _database!.query('AmountData', where: 'source_id = ? and date_time = ?', whereArgs: [sourceId, dateTime]).then((value){
+      if(value.isEmpty){
+        return 0.0;
+      }else{
+        return value[0]['amount'] as double;
+      }
+    });
+  }
+
+  static Future<void> deleteAmountData(int sourceId, String dateTime) async {
+    try{
+      await _database!.delete('AmountData', where: 'source_id = ? and date_time = ?', whereArgs: [sourceId, dateTime]);
+    }catch(e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+  }
+
+  static Future<int> getMinSourceId(){
+    return _database!.query('Sources', columns: ['id']).then((value) => value[0]['id'] as int);
+  }
+
+  static void cleanDB()async{
+    _database!.delete('Sources');
+    _database!.delete('AmountData');
+    _database!.execute('CREATE TABLE IF NOT EXISTS Sources ('
+    'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+    'source_name char(64))');
+    _database!.execute('CREATE TABLE IF NOT EXISTS AmountData ('
+    'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+    'source_id INTEGER, '
+    'date_time char(16), '
+    'amount float )');
+
+    _database!.insert('Sources', {'id':0,'source_name': '总'});
   }
 
 }

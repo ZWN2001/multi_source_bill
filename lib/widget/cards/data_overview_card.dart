@@ -73,7 +73,7 @@ class DataOverviewCard extends StatelessWidget{
                     return;
                   }
 
-                  DBApi.addAmountData(
+                  await DBApi.addAmountData(
                       dataOverview.source.id,
                       AmountData(
                     '${DateTime.now().month}-${DateTime.now().day}',

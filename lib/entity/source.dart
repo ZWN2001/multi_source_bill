@@ -25,7 +25,6 @@ class Source {
   //toMap
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
       'source_name': sourceName,
     };
   }

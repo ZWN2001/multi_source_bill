@@ -88,14 +88,16 @@ class HomePage extends StatelessWidget {
               child: const Text("取消"),
             ),
             TextButton(
-                onPressed: () {
+                onPressed: () async {
                   if (controller.text.isNotEmpty) {
                     Source s = Source(
                       sourceName: controller.text, id: 0,
                     );
-                    DBApi.addSource(s);
+                    await DBApi.addSource(s);
                   }
-                  Navigator.of(context).pop(true);
+                  if(context.mounted){
+                    Navigator.of(context).pop(true);
+                  }
                 },
                 child: const Text("确定")),
           ],
@@ -115,6 +117,7 @@ class HomePageController extends GetxController{
   Future<void> onInit() async{
     super.onInit();
     await DB.initialize();
+    DBApi.cleanDB();
     dataOverviews.addAll(await DBApi.getDataOverview());
     update();
   }

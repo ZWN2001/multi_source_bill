@@ -22,8 +22,19 @@ class DBApi{
         sourceName: item['source_name'],
       ));
     }
-
     return sources;
+  }
+
+  static Future<Source> getSourceByID(int id) async{
+    if(_database == null){
+      await DB.initialize();
+      _database = DB().database;
+    }
+    List res = await _database!.query('Sources', where: 'id = ?', whereArgs: [id]);
+    return Source(
+      id: res[0]['id'],
+      sourceName: res[0]['source_name'],
+    );
   }
 
   static Future<List<AmountData>> getAmountData(int sourceId,{int? limit}) async {
@@ -63,6 +74,18 @@ class DBApi{
       ));
     }
     return dataOverviews;
+  }
+
+  static Future<DataOverview> getDataOverviewDetailByID(int sourceID) async {
+    Source source = await getSourceByID(sourceID);
+    List<AmountData> amountData = await getAmountData(sourceID);
+    List amount = getAmountAndLast(amountData);
+    return DataOverview(
+      source: source,
+      amount: amount[0],
+      amountLast: amount[1],
+      chartData: amountData,
+    );
   }
 
   //获取amount和amountLast

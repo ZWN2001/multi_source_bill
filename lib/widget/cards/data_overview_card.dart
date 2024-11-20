@@ -4,6 +4,7 @@ import 'package:multi_source_bill/api/db_api.dart';
 
 import '../../entity/amount_data.dart';
 import '../../entity/data_overview.dart';
+import '../../page/data_detail_page.dart';
 import '../../utils/math.dart';
 import '../chart/line_chart.dart';
 
@@ -86,6 +87,9 @@ class DataOverviewCard extends StatelessWidget{
                   max = result[1];
                   updateCallback!(dataOverview);
                 }, icon: const Icon(Icons.add, color: Colors.black,)),
+                IconButton(onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => DataDetailPage(id: dataOverview.source.id)));
+                }, icon: const Icon(Icons.arrow_forward_ios, color: Colors.blue,)),
               ]:[
                 Text(
                   dataOverview.source.sourceName,
@@ -103,6 +107,9 @@ class DataOverviewCard extends StatelessWidget{
                     color: trending > 0 ? Colors.red : Colors.green,
                   ),
                 ),
+                IconButton(onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => DataDetailPage(id: dataOverview.source.id)));
+                }, icon: const Icon(Icons.arrow_forward_ios, color: Colors.blue,)),
               ],
             ),
             Text(

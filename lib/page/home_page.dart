@@ -55,7 +55,7 @@ class HomePage extends StatelessWidget {
       }),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          bool result = await showDialogFunction(context);
+          bool result = await _showDialogFunction(context);
           if (result) {
             homePageController.refreshData();
           }
@@ -67,7 +67,7 @@ class HomePage extends StatelessWidget {
 
 
 
-  Future<bool> showDialogFunction(context) async {
+  Future<bool> _showDialogFunction(context) async {
     TextEditingController controller = TextEditingController();
     bool b = await showDialog(
       context: context,

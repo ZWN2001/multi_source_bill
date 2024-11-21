@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:get/get.dart';
+import 'package:multi_source_bill/api/db_api.dart';
 import 'package:multi_source_bill/page/home_page.dart';
 import 'package:multi_source_bill/page/menu_page.dart';
 import 'package:multi_source_bill/utils/db.dart';
@@ -9,7 +10,8 @@ import 'package:multi_source_bill/utils/db.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Get.lazyPut(()=>HomePageController());
-  DB.initialize();
+  await DB.initialize();
+  await DBApi.dbInit();
   runApp(const MyApp());
 }
 

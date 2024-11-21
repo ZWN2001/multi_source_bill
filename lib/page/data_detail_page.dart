@@ -62,6 +62,7 @@ class DataDetailPageState extends State<DataDetailPage>{
     max = result[1];
     setState(() {});
   }
+
   @override
   void dispose() {
     super.dispose();

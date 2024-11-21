@@ -28,7 +28,7 @@ class DataOverviewCard extends StatelessWidget{
     double min = 0;
     List<double> result = MathUtils.lineChartDataMinMax(dataOverview.chartData);
     min = result[0];
-    max = result[1];
+    min = result[1];
     double trending = dataOverview.amount - dataOverview.amountLast;
     return Card(
       child: Container(
@@ -59,29 +59,14 @@ class DataOverviewCard extends StatelessWidget{
                 ),
                 Expanded(child: Container()),
                 IconButton(onPressed: () async {
-                  bool b = await showDialogFunction(context);
+                  bool b = await _showDialogFunction(context);
                   if (b) {
                     DBApi.deleteSource(dataOverview.source.id);
                     deleteCallback!(dataOverview);
                   }
                 }, icon: const Icon(Icons.delete, color: Colors.black,)),
                 IconButton(onPressed: () async {
-                  //chartData增加一条记录
-                  double? amount = 0;
-                  if(context.mounted){
-                    amount = await showUpdateDialog(context);
-                  }
-                  if(amount == null){
-                    return;
-                  }
-
-                  await DBApi.addAmountData(
-                      dataOverview.source.id,
-                      AmountData(
-                    '${DateTime.now().month}-${DateTime.now().day}',
-                    amount,
-                  ));
-
+                  await _dataAdd(context);
                   List<double> result = MathUtils.lineChartDataMinMax(dataOverview.chartData);
                   min = result[0];
                   max = result[1];
@@ -130,7 +115,25 @@ class DataOverviewCard extends StatelessWidget{
     );
   }
 
-  Future<bool> showDialogFunction(context) async {
+  Future<void> _dataAdd(BuildContext context) async {
+    //chartData增加一条记录
+    double? amount = 0;
+    if(context.mounted){
+      amount = await _showUpdateDialog(context);
+    }
+    if(amount == null){
+      return;
+    }
+
+    await DBApi.addAmountData(
+        dataOverview.source.id,
+        AmountData(
+          '${DateTime.now().month}-${DateTime.now().day}',
+          amount,
+        ));
+  }
+
+  Future<bool> _showDialogFunction(context) async {
     bool b = await showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -154,7 +157,7 @@ class DataOverviewCard extends StatelessWidget{
     return b;
   }
 
-  Future<double?> showUpdateDialog(context) async {
+  Future<double?> _showUpdateDialog(context) async {
     TextEditingController controller = TextEditingController();
     double? b = await showDialog(
       context: context,

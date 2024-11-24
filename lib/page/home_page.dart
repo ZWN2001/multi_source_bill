@@ -29,28 +29,58 @@ class HomePage extends StatelessWidget {
       body: GetBuilder(
         init: homePageController,
           builder: (_){
-        return SingleChildScrollView(
-          child: ListView.builder(
-            shrinkWrap: true,
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-            physics: const NeverScrollableScrollPhysics(),
-            itemBuilder: (BuildContext context, int index) {
-              return SizedBox(
-                height: 240,
-                child: DataOverviewCard(
-                  dataOverview: homePageController.dataOverviews[index],
-                  enableEdit: index != 0,
-                  deleteCallback: (DataOverview dataOverview) {
-                    homePageController.onDeleteCall(index);
-                  },
-                  updateCallback: (DataOverview dataOverview) {
-                    homePageController.onUpdateCall(index, dataOverview);
+        return Column(
+          children: [
+            Row(
+              children: [
+                DropdownMenu<String>(
+                  inputDecorationTheme: InputDecorationTheme(
+                    isDense: false,
+                    contentPadding: const EdgeInsets.fromLTRB(24, 0, 0, 0),
+                    constraints: BoxConstraints.tight(const Size.fromHeight(44)),
+                    border: InputBorder.none,
+                  ),
+                  // menuHeight: 30,
+                  initialSelection: homePageController.selectedFilter,
+                  onSelected: homePageController.onSelect,
+                  dropdownMenuEntries: _buildMenuList(homePageController.filterData),
+                ),
+                Expanded(child: Container()),
+                //筛选
+                IconButton(
+                  icon: const Icon(Icons.filter_alt),
+                  onPressed: () {
+
                   },
                 ),
-              );
-            },
-            itemCount: homePageController.dataOverviews.length,
-          ),
+                const SizedBox(width: 16),
+              ],
+            ),
+
+            SingleChildScrollView(
+              child: ListView.builder(
+                shrinkWrap: true,
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (BuildContext context, int index) {
+                  return SizedBox(
+                    height: 240,
+                    child: DataOverviewCard(
+                      dataOverview: homePageController.dataOverviews[index],
+                      enableEdit: index != 0,
+                      deleteCallback: (DataOverview dataOverview) {
+                        homePageController.onDeleteCall(index);
+                      },
+                      updateCallback: (DataOverview dataOverview) {
+                        homePageController.onUpdateCall(index, dataOverview);
+                      },
+                    ),
+                  );
+                },
+                itemCount: homePageController.dataOverviews.length,
+              ),
+            )
+          ],
         );
       }),
       floatingActionButton: FloatingActionButton(
@@ -107,18 +137,34 @@ class HomePage extends StatelessWidget {
     );
     return b;
   }
+
+  List<DropdownMenuEntry<String>> _buildMenuList(List<String> data) {
+    return data.map((String value) {
+      return DropdownMenuEntry<String>(value: value, label: value);
+    }).toList();
+  }
 }
 
 class HomePageController extends GetxController{
   static HomePageController get to => Get.find();
   RxList<DataOverview> dataOverviews = <DataOverview>[].obs;
-  late DataOverview allAmount;
+  final List<DataOverview> defaultDataOverviews = [];
+  final List<String> filterData = ['默认', '涨幅升序', '涨幅降序', '总额升序', '总额降序'];
+  //对应排序规则的排序方法
+  final Map<String, Function> filterMethods = {
+    '涨幅升序': (DataOverview a, DataOverview b) => (a.amount - a.amountLast).compareTo(b.amount - b.amountLast),
+    '涨幅降序': (DataOverview a, DataOverview b) => (b.amount - b.amountLast).compareTo(a.amount - a.amountLast),
+    '总额升序': (DataOverview a, DataOverview b) => a.amount.compareTo(b.amount),
+    '总额降序': (DataOverview a, DataOverview b) => b.amount.compareTo(a.amount),
+  };
+  String selectedFilter = '默认';
 
   @override
   Future<void> onInit() async{
     super.onInit();
     await DB.initialize();
     dataOverviews.addAll(await DBApi.getDataOverview());
+    defaultDataOverviews.addAll(dataOverviews);
     update();
   }
 
@@ -136,4 +182,15 @@ class HomePageController extends GetxController{
     refreshData();
   }
 
+  void onSelect(String? value) {
+    selectedFilter = value!;
+    if(selectedFilter == '默认'){
+      dataOverviews.clear();
+      dataOverviews.addAll(defaultDataOverviews);
+    }else{
+      dataOverviews.sort((a, b) => filterMethods[selectedFilter]!(a, b));
+    }
+
+    update();
+  }
 }

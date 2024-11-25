@@ -7,6 +7,7 @@ import '../entity/data_overview.dart';
 import '../entity/source.dart';
 import '../utils/db.dart';
 import '../widget/cards/data_overview_card.dart';
+import 'filter_select_page.dart';
 
 class HomePage extends StatelessWidget {
   final ZoomDrawerController controller;
@@ -27,62 +28,69 @@ class HomePage extends StatelessWidget {
         ),
       ),
       body: GetBuilder(
-        init: homePageController,
-          builder: (_){
-        return Column(
-          children: [
-            Row(
+          init: homePageController,
+          builder: (_) {
+            return Column(
               children: [
-                DropdownMenu<String>(
-                  inputDecorationTheme: InputDecorationTheme(
-                    isDense: false,
-                    contentPadding: const EdgeInsets.fromLTRB(24, 0, 0, 0),
-                    constraints: BoxConstraints.tight(const Size.fromHeight(44)),
-                    border: InputBorder.none,
-                  ),
-                  // menuHeight: 30,
-                  initialSelection: homePageController.selectedFilter,
-                  onSelected: homePageController.onSelect,
-                  dropdownMenuEntries: _buildMenuList(homePageController.filterData),
-                ),
-                Expanded(child: Container()),
-                //筛选
-                IconButton(
-                  icon: const Icon(Icons.filter_alt),
-                  onPressed: () {
-
-                  },
-                ),
-                const SizedBox(width: 16),
-              ],
-            ),
-
-            SingleChildScrollView(
-              child: ListView.builder(
-                shrinkWrap: true,
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (BuildContext context, int index) {
-                  return SizedBox(
-                    height: 240,
-                    child: DataOverviewCard(
-                      dataOverview: homePageController.dataOverviews[index],
-                      enableEdit: index != 0,
-                      deleteCallback: (DataOverview dataOverview) {
-                        homePageController.onDeleteCall(index);
-                      },
-                      updateCallback: (DataOverview dataOverview) {
-                        homePageController.onUpdateCall(index, dataOverview);
+                Row(
+                  children: [
+                    DropdownMenu<String>(
+                      inputDecorationTheme: InputDecorationTheme(
+                        isDense: false,
+                        contentPadding: const EdgeInsets.fromLTRB(24, 0, 0, 0),
+                        constraints: BoxConstraints.tight(
+                            const Size.fromHeight(44)),
+                        border: InputBorder.none,
+                      ),
+                      // menuHeight: 30,
+                      initialSelection: homePageController.selectedFilter,
+                      onSelected: homePageController.onSelect,
+                      dropdownMenuEntries: _buildMenuList(
+                          homePageController.filterData),
+                    ),
+                    Expanded(child: Container()),
+                    //筛选
+                    IconButton(
+                      icon: homePageController.filterFuncList.isEmpty
+                          ? const Icon(Icons.filter_alt)
+                          : const Icon(
+                          Icons.filter_alt_sharp, color: Colors.blue),
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(
+                            builder: (context) => FilterSelectPage()));
                       },
                     ),
-                  );
-                },
-                itemCount: homePageController.dataOverviews.length,
-              ),
-            )
-          ],
-        );
-      }),
+                    const SizedBox(width: 16),
+                  ],
+                ),
+
+                SingleChildScrollView(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (BuildContext context, int index) {
+                      return SizedBox(
+                        height: 240,
+                        child: DataOverviewCard(
+                          dataOverview: homePageController.dataOverviews[index],
+                          enableEdit: index != 0,
+                          deleteCallback: (DataOverview dataOverview) {
+                            homePageController.onDeleteCall(index);
+                          },
+                          updateCallback: (DataOverview dataOverview) {
+                            homePageController.onUpdateCall(
+                                index, dataOverview);
+                          },
+                        ),
+                      );
+                    },
+                    itemCount: homePageController.dataOverviews.length,
+                  ),
+                )
+              ],
+            );
+          }),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           bool result = await _showDialogFunction(context);
@@ -94,7 +102,6 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
-
 
 
   Future<bool> _showDialogFunction(context) async {
@@ -126,7 +133,7 @@ class HomePage extends StatelessWidget {
                     );
                     await DBApi.addSource(s);
                   }
-                  if(context.mounted){
+                  if (context.mounted) {
                     Navigator.of(context).pop(true);
                   }
                 },
@@ -149,6 +156,8 @@ class HomePageController extends GetxController{
   static HomePageController get to => Get.find();
   RxList<DataOverview> dataOverviews = <DataOverview>[].obs;
   final List<DataOverview> defaultDataOverviews = [];
+
+
   final List<String> filterData = ['默认', '涨幅升序', '涨幅降序', '总额升序', '总额降序'];
   //对应排序规则的排序方法
   final Map<String, Function> filterMethods = {
@@ -158,6 +167,11 @@ class HomePageController extends GetxController{
     '总额降序': (DataOverview a, DataOverview b) => b.amount.compareTo(a.amount),
   };
   String selectedFilter = '默认';
+
+  final List<Function> filterFuncList = [];
+  List<String> filterListSource = [];
+  double? filterAmountMin;
+  double? filterAmountMax;
 
   @override
   Future<void> onInit() async{
@@ -192,5 +206,18 @@ class HomePageController extends GetxController{
     }
 
     update();
+  }
+
+  void buildFilterFuncList(){
+    filterFuncList.clear();
+    if(filterListSource.isNotEmpty){
+      filterFuncList.add((DataOverview dataOverview) => filterListSource.contains(dataOverview.source.sourceName));
+    }
+    if(filterAmountMin != null){
+      filterFuncList.add((DataOverview dataOverview) => dataOverview.amount >= filterAmountMin!);
+    }
+    if(filterAmountMax != null){
+      filterFuncList.add((DataOverview dataOverview) => dataOverview.amount <= filterAmountMax!);
+    }
   }
 }

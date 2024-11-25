@@ -17,6 +17,11 @@ class DB {
           'date_time char(16), '
           'amount float )');
 
+      await _database!.execute('CREATE TABLE IF NOT EXISTS Tags ('
+          'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+          'source_id INTEGER, '
+          'tag_name char(16))');
+
       List res = await _database!.query('Sources');
       if(res.isEmpty){
         _database!

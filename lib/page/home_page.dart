@@ -32,6 +32,7 @@ class HomePage extends StatelessWidget {
           builder: (_) {
             return Column(
               children: [
+                //排序与筛选
                 Row(
                   children: [
                     DropdownMenu<String>(
@@ -63,7 +64,7 @@ class HomePage extends StatelessWidget {
                     const SizedBox(width: 16),
                   ],
                 ),
-
+                //数据列表
                 Expanded(
                     child: SingleChildScrollView(
                       child: ListView.builder(
@@ -72,7 +73,7 @@ class HomePage extends StatelessWidget {
                         physics: const NeverScrollableScrollPhysics(),
                         itemBuilder: (BuildContext context, int index) {
                           return SizedBox(
-                            height: 240,
+                            height: 260,
                             child: DataOverviewCard(
                               dataOverview: homePageController
                                   .dataOverviews[index],
@@ -184,20 +185,24 @@ class HomePageController extends GetxController{
     update();
   }
 
+  //删除和更新都是使用了最简单的暴力更新，后续可以优化
   Future<void> refreshData() async {
     dataOverviews.clear();
     dataOverviews.addAll(await DBApi.getDataOverview());
     update();
   }
 
+  //删除某个源后刷新数据
   void onDeleteCall(int index){
     refreshData();
   }
 
+  //更新某个源后刷新数据
   Future<void> onUpdateCall(int index,DataOverview dataOverview) async {
     refreshData();
   }
 
+  //应用筛选策略
   void onSelect(String? value) {
     selectedFilter = value!;
     if(selectedFilter == '默认'){
@@ -210,6 +215,7 @@ class HomePageController extends GetxController{
     update();
   }
 
+  //根据筛选条件构建筛选Function列表
   void buildFilterFuncList(){
     filterFuncList.clear();
     if(filterListSource.isNotEmpty){

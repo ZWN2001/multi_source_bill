@@ -7,12 +7,14 @@ class DataOverview {
   double amount;
   double amountLast;
   final List<AmountData> chartData;
+  final List<String> tags;
 
   DataOverview({
     required this.source,
     required this.amount,
     required this.amountLast,
     required this.chartData,
+    required this.tags,
   });
 
   factory DataOverview.fromJson(Map<String, dynamic> json) {
@@ -24,6 +26,7 @@ class DataOverview {
         final Map<String, dynamic> data = Map<String, dynamic>.from(e as Map);
         return AmountData.fromJson(data);
       }).toList(),
+      tags: json['tags'] as List<String>,
     );
   }
 
@@ -33,12 +36,13 @@ class DataOverview {
       'amount': amount,
       'amountLast': amountLast,
       'chartData': chartData.map((e) => e.toJson()).toList(),
+      'tags': tags,
     };
   }
 
   @override
   String toString() {
-    return 'DataOverview{source: $source, amount: $amount, amountLast: $amountLast}';
+    return 'DataOverview{source: $source, amount: $amount, amountLast: $amountLast},';
   }
 
 }

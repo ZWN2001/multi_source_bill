@@ -125,6 +125,7 @@ class DBApi{
     int minSourceId = await getMinSourceId();
     List<AmountData> amountListOfAll = await getAmountData(minSourceId);
     AmountData last = amountListOfAll.last;
+    //如果最后一条数据的日期和新增的数据日期不同，则新增一条数据
     if (last.dateTime != amountData.dateTime) {
       await _database!.insert('AmountData', {
         'source_id': minSourceId,
@@ -162,28 +163,38 @@ class DBApi{
   static Future<List<DataOverview>> getDataOverview() async {
     List<Source> sources = await getSources();
     List<DataOverview> dataOverviews = [];
+    DataOverview d;
     for (Source source in sources) {
-      List<AmountData> amountData = await getAmountData(source.id, limit: 5);
-      List amount = getAmountAndLast(amountData);
-      dataOverviews.add(DataOverview(
-        source: source,
-        amount: amount[0],
-        amountLast: amount[1],
-        chartData: amountData,
-      ));
+      d = await getDataOverviewDetailBySource(source);
+      dataOverviews.add(d);
     }
     return dataOverviews;
   }
 
-  static Future<DataOverview> getDataOverviewDetailByID(int sourceID) async {
-    Source source = await getSourceByID(sourceID);
-    List<AmountData> amountData = await getAmountData(sourceID);
+  static Future<DataOverview> getDataOverviewDetailBySource(Source source) async {
+    List<AmountData> amountData = await getAmountData(source.id);
+    List<String> tags = await getTagsByID(source.id);
     List amount = getAmountAndLast(amountData);
     return DataOverview(
       source: source,
       amount: amount[0],
       amountLast: amount[1],
       chartData: amountData,
+      tags: tags,
+    );
+  }
+
+  static Future<DataOverview> getDataOverviewDetailByID(int sourceID) async {
+    Source source = await getSourceByID(sourceID);
+    List<AmountData> amountData = await getAmountData(sourceID);
+    List<String> tags = await getTagsByID(source.id);
+    List amount = getAmountAndLast(amountData);
+    return DataOverview(
+      source: source,
+      amount: amount[0],
+      amountLast: amount[1],
+      chartData: amountData,
+      tags: tags,
     );
   }
 
@@ -211,6 +222,7 @@ class DBApi{
   static Future<void> cleanDB()async{
     await _database!.delete('Sources');
     await _database!.delete('AmountData');
+    await _database!.delete('Tags');
     await _database!.execute('CREATE TABLE IF NOT EXISTS Sources ('
     'id INTEGER PRIMARY KEY AUTOINCREMENT, '
     'source_name char(64))');
@@ -219,6 +231,10 @@ class DBApi{
     'source_id INTEGER, '
     'date_time char(16), '
     'amount float )');
+    await _database!.execute('CREATE TABLE IF NOT EXISTS Tags ('
+        'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+        'source_id INTEGER, '
+        'tag_name char(16))');
 
     await _database!.insert('Sources', {'id':0,'source_name': '总'});
   }
@@ -228,6 +244,7 @@ class DBApi{
     await _database!.insert('Sources', {'id':1,'source_name': 'test'});
     await _database!.insert('AmountData', {'source_id':1,'date_time':'01-01','amount': 100});
     await _database!.insert('AmountData', {'source_id':0,'date_time':'01-01','amount': 100});
+    await _database!.insert('Tags', {'source_id':1,'tag_name':'test'});
   }
 
 }

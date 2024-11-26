@@ -10,10 +10,10 @@ import 'package:multi_source_bill/utils/db.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Get.lazyPut(()=>HomePageController());
-  Get.lazyPut(()=>FilterSelectPageController());
   await DB.initialize();
   await DBApi.dbInit();
+  Get.lazyPut(()=>HomePageController());
+  Get.lazyPut(()=>FilterSelectPageController());
   runApp(const MyApp());
 }
 

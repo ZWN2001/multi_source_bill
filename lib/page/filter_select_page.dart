@@ -15,6 +15,7 @@ class FilterSelectPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //用到的homePageController主要是为了将筛选条件进行同步，这样重新打开筛选页面时，可以看到之前的筛选条件
     const filters = [' 筛选源', ' 筛选标签', ' 数额区间'];
     const duration = Duration(milliseconds: 300);
     var homePageController = Get.find<HomePageController>();
@@ -32,6 +33,7 @@ class FilterSelectPage extends StatelessWidget {
             Expanded(
               child: Row(
                 children: [
+                  //左侧侧边栏
                   ViewTabBar(
                     pinned: true,
                     itemCount: filters.length,

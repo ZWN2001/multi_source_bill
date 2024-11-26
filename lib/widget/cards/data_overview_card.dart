@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:multi_source_bill/api/db_api.dart';
+import 'package:multi_source_bill/widget/tag_item.dart';
 
 import '../../entity/amount_data.dart';
 import '../../entity/data_overview.dart';
@@ -38,6 +39,7 @@ class DataOverviewCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
+            //标题与小功能
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -49,43 +51,45 @@ class DataOverviewCard extends StatelessWidget {
                   width: 36,
                 ),
                 Expanded(child: Container()),
+                //总看板不允许编辑
                 ...enableEdit
                     ? [
-                        IconButton(
-                            onPressed: () async {
-                              bool b = await _showDialogFunction(context);
-                              if (b) {
-                                DBApi.deleteSource(dataOverview.source.id);
-                                deleteCallback!(dataOverview);
-                              }
-                            },
-                            icon: const Icon(
-                              Icons.delete,
-                              color: Colors.black,
-                            )),
-                        IconButton(
-                            onPressed: () async {
-                              await _tagAdd(context);
-                            },
-                            icon: const Icon(
-                              Icons.tag,
-                              color: Colors.black,
-                            )),
-                        IconButton(
-                            onPressed: () async {
-                              await _dataAdd(context);
-                              List<double> result =
-                                  MathUtils.lineChartDataMinMax(
-                                      dataOverview.chartData);
-                              min = result[0];
-                              max = result[1];
-                              updateCallback!(dataOverview);
-                            },
-                            icon: const Icon(
-                              Icons.add,
-                              color: Colors.black,
-                            )),
-                      ]
+                  IconButton(
+                      onPressed: () async {
+                        bool b = await _showDialogFunction(context);
+                        if (b) {
+                          DBApi.deleteSource(dataOverview.source.id);
+                          deleteCallback!(dataOverview);
+                        }
+                      },
+                      icon: const Icon(
+                        Icons.delete,
+                        color: Colors.black,
+                      )),
+                  IconButton(
+                      onPressed: () async {
+                        await _tagAdd(context);
+                        updateCallback!(dataOverview);
+                      },
+                      icon: const Icon(
+                        Icons.tag,
+                        color: Colors.black,
+                      )),
+                  IconButton(
+                      onPressed: () async {
+                        await _dataAdd(context);
+                        List<double> result =
+                        MathUtils.lineChartDataMinMax(
+                            dataOverview.chartData);
+                        min = result[0];
+                        max = result[1];
+                        updateCallback!(dataOverview);
+                      },
+                      icon: const Icon(
+                        Icons.add,
+                        color: Colors.black,
+                      )),
+                ]
                     : [],
                 IconButton(
                     onPressed: () {
@@ -101,6 +105,7 @@ class DataOverviewCard extends StatelessWidget {
                     ))
               ],
             ),
+            //amount数据
             Row(
               children: [
                 Text(
@@ -124,6 +129,16 @@ class DataOverviewCard extends StatelessWidget {
                 ),
               ],
             ),
+            //标签
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: dataOverview.tags
+                    .map((e) => TagItem(tag: e))
+                    .toList(),
+              ),
+            ),
+            //图表
             Expanded(
               child: LineChart(
                 chartData: dataOverview.chartData,
@@ -165,6 +180,7 @@ class DataOverviewCard extends StatelessWidget {
     if (tag == null) {
       return;
     }
+    DBApi.addTag(dataOverview.source.id, tag);
 
   }
 

@@ -8,7 +8,7 @@ import '../../page/data_detail_page.dart';
 import '../../utils/math.dart';
 import '../chart/line_chart.dart';
 
-class DataOverviewCard extends StatelessWidget{
+class DataOverviewCard extends StatelessWidget {
   final DataOverview dataOverview;
   final bool enableEdit;
   final Function(DataOverview)? deleteCallback;
@@ -18,7 +18,7 @@ class DataOverviewCard extends StatelessWidget{
     super.key,
     required this.dataOverview,
     required this.enableEdit,
-    this.deleteCallback ,
+    this.deleteCallback,
     this.updateCallback,
   });
 
@@ -40,66 +40,89 @@ class DataOverviewCard extends StatelessWidget{
           children: <Widget>[
             Row(
               mainAxisSize: MainAxisSize.min,
-              children: enableEdit?[
+              children: [
                 Text(
                   dataOverview.source.sourceName,
                   style: const TextStyle(fontSize: 18),
                 ),
-                const SizedBox(width: 36,),
-                Icon(
-                  trending > 0 ? Icons.trending_up : Icons.trending_down,
-                  color: trending > 0 ? Colors.red : Colors.green,
-                ),
-                Text(
-                  ' ${trending.abs()} ',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: trending > 0 ? Colors.red : Colors.green,
-                  ),
+                const SizedBox(
+                  width: 36,
                 ),
                 Expanded(child: Container()),
-                IconButton(onPressed: () async {
-                  bool b = await _showDialogFunction(context);
-                  if (b) {
-                    DBApi.deleteSource(dataOverview.source.id);
-                    deleteCallback!(dataOverview);
-                  }
-                }, icon: const Icon(Icons.delete, color: Colors.black,)),
-                IconButton(onPressed: () async {
-                  await _dataAdd(context);
-                  List<double> result = MathUtils.lineChartDataMinMax(dataOverview.chartData);
-                  min = result[0];
-                  max = result[1];
-                  updateCallback!(dataOverview);
-                }, icon: const Icon(Icons.add, color: Colors.black,)),
-                IconButton(onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => DataDetailPage(id: dataOverview.source.id)));
-                }, icon: const Icon(Icons.arrow_forward_ios, color: Colors.blue,)),
-              ]:[
-                Text(
-                  dataOverview.source.sourceName,
-                  style: const TextStyle(fontSize: 18),
-                ),
-                Expanded(child: Container()),
-                Icon(
-                  trending > 0 ? Icons.trending_up : Icons.trending_down,
-                  color: trending > 0 ? Colors.red : Colors.green,
-                ),
-                Text(
-                  ' ${trending.abs()} ',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: trending > 0 ? Colors.red : Colors.green,
-                  ),
-                ),
-                IconButton(onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => DataDetailPage(id: dataOverview.source.id)));
-                }, icon: const Icon(Icons.arrow_forward_ios, color: Colors.blue,)),
+                ...enableEdit
+                    ? [
+                        IconButton(
+                            onPressed: () async {
+                              bool b = await _showDialogFunction(context);
+                              if (b) {
+                                DBApi.deleteSource(dataOverview.source.id);
+                                deleteCallback!(dataOverview);
+                              }
+                            },
+                            icon: const Icon(
+                              Icons.delete,
+                              color: Colors.black,
+                            )),
+                        IconButton(
+                            onPressed: () async {
+                              await _tagAdd(context);
+                            },
+                            icon: const Icon(
+                              Icons.tag,
+                              color: Colors.black,
+                            )),
+                        IconButton(
+                            onPressed: () async {
+                              await _dataAdd(context);
+                              List<double> result =
+                                  MathUtils.lineChartDataMinMax(
+                                      dataOverview.chartData);
+                              min = result[0];
+                              max = result[1];
+                              updateCallback!(dataOverview);
+                            },
+                            icon: const Icon(
+                              Icons.add,
+                              color: Colors.black,
+                            )),
+                      ]
+                    : [],
+                IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  DataDetailPage(id: dataOverview.source.id)));
+                    },
+                    icon: const Icon(
+                      Icons.arrow_forward_ios,
+                      color: Colors.blue,
+                    ))
               ],
             ),
-            Text(
-              '当前总额: ${dataOverview.amount}',
-              style: const TextStyle(fontSize: 24),
+            Row(
+              children: [
+                Text(
+                  '当前总额: ${dataOverview.amount}',
+                  style: const TextStyle(fontSize: 24),
+                ),
+                Expanded(child: Container()),
+                Icon(
+                  trending > 0 ? Icons.trending_up : Icons.trending_down,
+                  color: trending > 0 ? Colors.red : Colors.green,
+                ),
+                Text(
+                  ' ${trending.abs()} ',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: trending > 0 ? Colors.red : Colors.green,
+                  ),
+                ),
+                const SizedBox(
+                  width: 12,
+                ),
+              ],
             ),
             Expanded(
               child: LineChart(
@@ -118,10 +141,10 @@ class DataOverviewCard extends StatelessWidget{
   Future<void> _dataAdd(BuildContext context) async {
     //chartData增加一条记录
     double? amount = 0;
-    if(context.mounted){
+    if (context.mounted) {
       amount = await _showUpdateDialog(context);
     }
-    if(amount == null){
+    if (amount == null) {
       return;
     }
 
@@ -131,6 +154,18 @@ class DataOverviewCard extends StatelessWidget{
           '${DateTime.now().month}-${DateTime.now().day}',
           amount,
         ));
+  }
+
+  Future<void> _tagAdd(BuildContext context) async {
+    //chartData增加一条记录
+    String? tag = '';
+    if (context.mounted) {
+      tag = await _showAddTagDialog(context);
+    }
+    if (tag == null) {
+      return;
+    }
+
   }
 
   Future<bool> _showDialogFunction(context) async {
@@ -147,9 +182,11 @@ class DataOverviewCard extends StatelessWidget{
               },
               child: const Text("取消"),
             ),
-            TextButton(onPressed: () {
-              Navigator.of(context).pop(true);
-            }, child: const Text("确定")),
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+                child: const Text("确定")),
           ],
         );
       },
@@ -171,7 +208,7 @@ class DataOverviewCard extends StatelessWidget{
             ),
             keyboardType: TextInputType.number,
             inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))//设置只允许输入数字
+              FilteringTextInputFormatter.allow(RegExp(r'[0-9]')) //设置只允许输入数字
             ],
           ),
           actions: [
@@ -188,6 +225,43 @@ class DataOverviewCard extends StatelessWidget{
                     amount = double.parse(controller.text);
                   }
                   Navigator.of(context).pop(amount);
+                },
+                child: const Text("确定")),
+          ],
+        );
+      },
+    );
+    return b;
+  }
+
+  Future<String?> _showAddTagDialog(context) async {
+    TextEditingController controller = TextEditingController();
+    String? b = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("添加一个Tag"),
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(
+              labelText: 'Tag',
+            ),
+            maxLength: 16,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("取消"),
+            ),
+            TextButton(
+                onPressed: () {
+                  String tag = '';
+                  if (controller.text.isNotEmpty) {
+                    tag = controller.text;
+                  }
+                  Navigator.of(context).pop(tag);
                 },
                 child: const Text("确定")),
           ],

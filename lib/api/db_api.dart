@@ -187,6 +187,27 @@ class DBApi{
     );
   }
 
+  static Future<List<String>> getTags()async{
+    List<String> list = [];
+    list.addAll(await _database!.query('Tags').then((value) => value.map((e) => e['tag_name'] as String).toSet().toList()));
+    return list;
+  }
+
+  static Future<List<String>> getTagsByID(int sourceID)async{
+    List<String> list = [];
+    list.addAll(await _database!.query('Tags',where: 'source_id = ?',whereArgs: [sourceID]).then((value) => value.map((e) => e['tag_name'] as String).toList()));
+    return list;
+  }
+
+  static Future<void> addTag(int sourceID,String tagName)async{
+    //先查询是否已经存在
+    List<String> tags = await getTagsByID(sourceID);
+    if(tags.contains(tagName)){
+      return;
+    }
+    await _database!.insert('Tags', {'source_id':sourceID,'tag_name':tagName});
+  }
+
   static Future<void> cleanDB()async{
     await _database!.delete('Sources');
     await _database!.delete('AmountData');

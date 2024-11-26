@@ -64,30 +64,32 @@ class HomePage extends StatelessWidget {
                   ],
                 ),
 
-                SingleChildScrollView(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (BuildContext context, int index) {
-                      return SizedBox(
-                        height: 240,
-                        child: DataOverviewCard(
-                          dataOverview: homePageController.dataOverviews[index],
-                          enableEdit: index != 0,
-                          deleteCallback: (DataOverview dataOverview) {
-                            homePageController.onDeleteCall(index);
-                          },
-                          updateCallback: (DataOverview dataOverview) {
-                            homePageController.onUpdateCall(
-                                index, dataOverview);
-                          },
-                        ),
-                      );
-                    },
-                    itemCount: homePageController.dataOverviews.length,
-                  ),
-                )
+                Expanded(
+                    child: SingleChildScrollView(
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemBuilder: (BuildContext context, int index) {
+                          return SizedBox(
+                            height: 240,
+                            child: DataOverviewCard(
+                              dataOverview: homePageController
+                                  .dataOverviews[index],
+                              enableEdit: index != 0,
+                              deleteCallback: (DataOverview dataOverview) {
+                                homePageController.onDeleteCall(index);
+                              },
+                              updateCallback: (DataOverview dataOverview) {
+                                homePageController.onUpdateCall(
+                                    index, dataOverview);
+                              },
+                            ),
+                          );
+                        },
+                        itemCount: homePageController.dataOverviews.length,
+                      ),
+                    ))
               ],
             );
           }),

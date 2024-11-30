@@ -1,6 +1,7 @@
 import 'package:choice/choice.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:view_tabbar/view_tabbar.dart';
 
@@ -23,7 +24,10 @@ class FilterSelectPage extends StatelessWidget {
       _buildTagFilter(fc,fc.tagsList),
       _buildAmountFilter(fc)
     ];
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: fc.onPop,
+        child: Scaffold(
         appBar: AppBar(
           title: const Text('筛选'),
         ),
@@ -100,13 +104,16 @@ class FilterSelectPage extends StatelessWidget {
                   Expanded(child: Container()),
                   ElevatedButton(onPressed: fc.clearFilter, child: const Text("重置")),
                   const SizedBox(width: 16),
-                  ElevatedButton(onPressed: fc.confirm, child: const Text("确定")),
+                  ElevatedButton(onPressed: (){
+                    fc.confirm();
+                    Get.back();
+                  }, child: const Text("确定")),
                 ],
               ),
             )
           ],
         )
-    );
+    ));
   }
 
 
@@ -245,6 +252,7 @@ class FilterSelectPageController extends GetxController{
   var homePageController = Get.find<HomePageController>();
   final filters = [' 筛选源', ' 筛选标签', ' 数额区间'];
   final  duration = const Duration(milliseconds: 300);
+  DateTime? lastPressedAt; //上次点击时间
 
 
   @override
@@ -263,8 +271,6 @@ class FilterSelectPageController extends GetxController{
     tagsList.clear();
     sourceNamesList.addAll(await DBApi.getSourceNames());
     tagsList.addAll(await DBApi.getTags());
-    print("sourceNamesList: $sourceNamesList");
-    print("tagsList: $tagsList");
     update();
   }
 
@@ -286,7 +292,6 @@ class FilterSelectPageController extends GetxController{
     homePageController.filterAmountMax = amountMax;
     homePageController.buildFilterFuncList();
     homePageController.doFilter();
-    Get.back();
   }
 
   void setSelectedSourceValue(List<String> value) {
@@ -299,5 +304,16 @@ class FilterSelectPageController extends GetxController{
     filterListTag.clear();
     filterListTag.addAll(value);
     update();
+  }
+
+  void onPop(bool didPop, Object? result) {
+    if(lastPressedAt == null || DateTime.now().difference(lastPressedAt!) > const Duration(seconds: 3)){
+      Fluttertoast.showToast(msg: '再按一次退出');
+      lastPressedAt = DateTime.now();
+    }else{
+      clearFilter();
+      confirm();
+      Get.back();
+    }
   }
 }

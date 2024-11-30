@@ -190,6 +190,8 @@ class HomePageController extends GetxController{
   Future<void> refreshData() async {
     dataOverviews.clear();
     dataOverviews.addAll(await DBApi.getDataOverview());
+    defaultDataOverviews.clear();
+    defaultDataOverviews.addAll(dataOverviews);
     update();
   }
 
@@ -222,11 +224,27 @@ class HomePageController extends GetxController{
     if(filterListSource.isNotEmpty){
       filterFuncList.add((DataOverview dataOverview) => filterListSource.contains(dataOverview.source.sourceName));
     }
+    if(filterListTag.isNotEmpty){
+      filterFuncList.add((DataOverview dataOverview) => dataOverview.tags.any((String tag) => filterListTag.contains(tag)));
+    }
     if(filterAmountMin != null){
       filterFuncList.add((DataOverview dataOverview) => dataOverview.amount >= filterAmountMin!);
     }
     if(filterAmountMax != null){
       filterFuncList.add((DataOverview dataOverview) => dataOverview.amount <= filterAmountMax!);
     }
+  }
+
+  void doFilter(){
+    dataOverviews.clear();
+    dataOverviews.addAll(defaultDataOverviews.where((DataOverview dataOverview){
+      for(Function f in filterFuncList){
+        if(!f(dataOverview)){
+          return false;
+        }
+      }
+      return true;
+    }));
+    update();
   }
 }

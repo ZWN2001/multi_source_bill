@@ -17,6 +17,7 @@ class FilterSelectPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var fc = Get.find<FilterSelectPageController>();
+    fc.refreshData();
     var filterWidgets = [
       _buildSourceFilter(fc,fc.sourceNamesList),
       _buildTagFilter(fc,fc.tagsList),
@@ -247,15 +248,23 @@ class FilterSelectPageController extends GetxController{
 
 
   @override
-  Future<void> onInit() async {
+  void onInit() {
     super.onInit();
-    sourceNamesList.addAll(await DBApi.getSourceNames());
-    tagsList.addAll(await DBApi.getTags());
     //用到的homePageController主要是为了将筛选条件进行同步，这样重新打开筛选页面时，可以看到之前的筛选条件
     filterListSource.addAll(homePageController.filterListSource);
     filterListTag.addAll(homePageController.filterListTag);
     amountMin = homePageController.filterAmountMin;
     amountMax = homePageController.filterAmountMax;
+    // refreshData();
+  }
+
+  void refreshData()async{
+    sourceNamesList.clear();
+    tagsList.clear();
+    sourceNamesList.addAll(await DBApi.getSourceNames());
+    tagsList.addAll(await DBApi.getTags());
+    print("sourceNamesList: $sourceNamesList");
+    print("tagsList: $tagsList");
     update();
   }
 
@@ -276,6 +285,7 @@ class FilterSelectPageController extends GetxController{
     homePageController.filterAmountMin = amountMin;
     homePageController.filterAmountMax = amountMax;
     homePageController.buildFilterFuncList();
+    homePageController.doFilter();
     Get.back();
   }
 

@@ -1,17 +1,19 @@
 class Source {
   final int id;
   final String sourceName;
+  final List<String> tags;
 
   Source({
     required this.id,
     required this.sourceName,
-
+    required this.tags,
   });
 
   factory Source.fromJson(Map<String, dynamic> json) {
     return Source(
       id: json['id'],
       sourceName: json['source_name'],
+      tags: json['tags'] as List<String>,
     );
   }
 
@@ -19,6 +21,7 @@ class Source {
     return {
       'id': id,
       'source_name': sourceName,
+      'tags': tags,
     };
   }
 

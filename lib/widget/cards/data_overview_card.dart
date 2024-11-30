@@ -133,7 +133,7 @@ class DataOverviewCard extends StatelessWidget {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: dataOverview.tags
+                children: dataOverview.source.tags
                     .map((e) => TagItem(tag: e))
                     .toList(),
               ),

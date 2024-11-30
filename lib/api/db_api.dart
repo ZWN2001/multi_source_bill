@@ -20,6 +20,7 @@ class DBApi{
       sources.add(Source(
         id: item['id'],
         sourceName: item['source_name'],
+        tags: await getTagsByID(item['id']),
       ));
     }
     return sources;
@@ -43,6 +44,7 @@ class DBApi{
     return Source(
       id: res[0]['id'],
       sourceName: res[0]['source_name'],
+      tags: await getTagsByID(res[0]['id']),
     );
   }
 
@@ -182,28 +184,24 @@ class DBApi{
 
   static Future<DataOverview> getDataOverviewDetailBySource(Source source) async {
     List<AmountData> amountData = await getAmountData(source.id);
-    List<String> tags = await getTagsByID(source.id);
     List amount = getAmountAndLast(amountData);
     return DataOverview(
       source: source,
       amount: amount[0],
       amountLast: amount[1],
       chartData: amountData,
-      tags: tags,
     );
   }
 
   static Future<DataOverview> getDataOverviewDetailByID(int sourceID) async {
     Source source = await getSourceByID(sourceID);
     List<AmountData> amountData = await getAmountData(sourceID);
-    List<String> tags = await getTagsByID(source.id);
     List amount = getAmountAndLast(amountData);
     return DataOverview(
       source: source,
       amount: amount[0],
       amountLast: amount[1],
       chartData: amountData,
-      tags: tags,
     );
   }
 

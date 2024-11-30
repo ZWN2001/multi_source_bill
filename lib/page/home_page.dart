@@ -132,7 +132,9 @@ class HomePage extends StatelessWidget {
                 onPressed: () async {
                   if (controller.text.isNotEmpty) {
                     Source s = Source(
-                      sourceName: controller.text, id: 0,
+                      sourceName: controller.text,
+                      id: 0,
+                      tags: []
                     );
                     await DBApi.addSource(s);
                   }
@@ -225,7 +227,7 @@ class HomePageController extends GetxController{
       filterFuncList.add((DataOverview dataOverview) => filterListSource.contains(dataOverview.source.sourceName));
     }
     if(filterListTag.isNotEmpty){
-      filterFuncList.add((DataOverview dataOverview) => dataOverview.tags.any((String tag) => filterListTag.contains(tag)));
+      filterFuncList.add((DataOverview dataOverview) => dataOverview.source.tags.any((String tag) => filterListTag.contains(tag)));
     }
     if(filterAmountMin != null){
       filterFuncList.add((DataOverview dataOverview) => dataOverview.amount >= filterAmountMin!);

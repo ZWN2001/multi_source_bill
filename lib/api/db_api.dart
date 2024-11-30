@@ -25,6 +25,15 @@ class DBApi{
     return sources;
   }
 
+  static Future<List<String>> getSourceNames() async{
+    List<String> sources = [];
+    List res = await _database!.query('Sources');
+    for (Map item in res) {
+      sources.add(item['source_name']);
+    }
+    return sources;
+  }
+
   static Future<Source> getSourceByID(int id) async{
     if(_database == null){
       await DB.initialize();

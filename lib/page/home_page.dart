@@ -173,6 +173,7 @@ class HomePageController extends GetxController{
 
   final List<Function> filterFuncList = [];
   List<String> filterListSource = [];
+  List<String> filterListTag = [];
   double? filterAmountMin;
   double? filterAmountMax;
 

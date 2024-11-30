@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:view_tabbar/view_tabbar.dart';
 
+import '../api/db_api.dart';
 import 'home_page.dart';
 
 class FilterSelectPage extends StatelessWidget {
@@ -15,15 +16,12 @@ class FilterSelectPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //用到的homePageController主要是为了将筛选条件进行同步，这样重新打开筛选页面时，可以看到之前的筛选条件
-    const filters = [' 筛选源', ' 筛选标签', ' 数额区间'];
-    const duration = Duration(milliseconds: 300);
-    var homePageController = Get.find<HomePageController>();
-    var filterSelectPageController = Get.find<FilterSelectPageController>();
-    filterSelectPageController.filterListSource = homePageController.filterListSource;
-    filterSelectPageController.amountMin = homePageController.filterAmountMin;
-    filterSelectPageController.amountMax = homePageController.filterAmountMax;
-    var filterWidgets = [_buildTagFilter(filterSelectPageController),_buildTagFilter(filterSelectPageController), _buildAmountFilter(filterSelectPageController)];
+    var fc = Get.find<FilterSelectPageController>();
+    var filterWidgets = [
+      _buildSourceFilter(fc,fc.sourceNamesList),
+      _buildTagFilter(fc,fc.tagsList),
+      _buildAmountFilter(fc)
+    ];
     return Scaffold(
         appBar: AppBar(
           title: const Text('筛选'),
@@ -36,11 +34,11 @@ class FilterSelectPage extends StatelessWidget {
                   //左侧侧边栏
                   ViewTabBar(
                     pinned: true,
-                    itemCount: filters.length,
+                    itemCount: fc.filters.length,
                     direction: Axis.vertical,
                     pageController: pageController,
                     tabBarController: tabBarController,
-                    animationDuration: duration,
+                    animationDuration: fc.duration,
                     // 取消动画 -> Duration.zero
                     builder: (context, index) {
                       return ViewTabBarItem(
@@ -60,7 +58,7 @@ class FilterSelectPage extends StatelessWidget {
                                   bottom: 8.0,
                                 ),
                                 child: Text(
-                                  filters[index],
+                                  fc.filters[index],
                                   style: TextStyle(
                                     color: color,
                                     fontWeight: FontWeight.w500,
@@ -84,7 +82,7 @@ class FilterSelectPage extends StatelessWidget {
 
                   Expanded(
                     child: PageView.builder(
-                      itemCount: filters.length,
+                      itemCount: fc.filters.length,
                       controller: pageController,
                       scrollDirection: Axis.vertical,
                       itemBuilder: (context, index) {
@@ -99,15 +97,9 @@ class FilterSelectPage extends StatelessWidget {
               child: Row(
                 children: [
                   Expanded(child: Container()),
-                  ElevatedButton(onPressed: filterSelectPageController.clearFilter, child: const Text("重置")),
+                  ElevatedButton(onPressed: fc.clearFilter, child: const Text("重置")),
                   const SizedBox(width: 16),
-                  ElevatedButton(onPressed: () {
-                    homePageController.filterListSource = filterSelectPageController.filterListSource;
-                    homePageController.filterAmountMin = filterSelectPageController.amountMin;
-                    homePageController.filterAmountMax = filterSelectPageController.amountMax;
-                    homePageController.buildFilterFuncList();
-                    Get.back();
-                  }, child: const Text("确定")),
+                  ElevatedButton(onPressed: fc.confirm, child: const Text("确定")),
                 ],
               ),
             )
@@ -117,41 +109,60 @@ class FilterSelectPage extends StatelessWidget {
   }
 
 
-  Widget _buildTagFilter(FilterSelectPageController filterSelectPageController) {
-    List<String> choices = [
-      'News',
-      'Entertainment',
-      'Politics',
-      'Automotive',
-      'Sports',
-      'Education',
-      'Fashion',
-      'Travel',
-      'Food',
-      'Tech',
-      'Science',
-      'Arts'
-    ];
-
-
+  Widget _buildSourceFilter(FilterSelectPageController fc, List<String> choices) {
     return GetBuilder(
-        init: filterSelectPageController,
+        init: fc,
         builder: (_) {
           return InlineChoice<String>.multiple(
             clearable: true,
-            value: filterSelectPageController.filterListSource,
-            onChanged: filterSelectPageController.setSelectedValue,
+            value: fc.filterListSource,
+            onChanged: fc.setSelectedSourceValue,
             itemCount: choices.length,
             itemBuilder: (state, i) {
               return ChoiceChip(
-                selected: filterSelectPageController.filterListSource.contains(
-                    choices[i]),
+                selected: fc.filterListSource.contains(choices[i]),
                 onSelected: (selected) {
                   if (selected) {
-                    filterSelectPageController.filterListSource.add(choices[i]);
+                    fc.filterListSource.add(choices[i]);
                   } else {
-                    filterSelectPageController.filterListSource.remove(choices[i]);
+                    fc.filterListSource.remove(choices[i]);
                   }
+                  fc.update();
+                },
+                label: Text(choices[i]),
+              );
+            },
+            listBuilder: ChoiceList.createWrapped(
+              spacing: 10,
+              runSpacing: 10,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 25,
+              ),
+            ),
+          );
+        });
+  }
+
+  Widget _buildTagFilter(FilterSelectPageController fc, List<String> choices) {
+    return GetBuilder(
+        init: fc,
+        builder: (_) {
+          return InlineChoice<String>.multiple(
+            clearable: true,
+            value: fc.filterListTag,
+            onChanged: fc.setSelectedSourceValue,
+            itemCount: choices.length,
+            itemBuilder: (state, i) {
+              return ChoiceChip(
+                selected: fc.filterListTag.contains(choices[i]),
+                onSelected: (selected) {
+                  if (selected) {
+                    fc.filterListTag.add(choices[i]);
+                  } else {
+                    fc.filterListTag.remove(choices[i]);
+                  }
+                  fc.update();
                 },
                 label: Text(choices[i]),
               );
@@ -224,12 +235,33 @@ class FilterSelectPage extends StatelessWidget {
 class FilterSelectPageController extends GetxController{
   final maxEditController = TextEditingController();
   final minEditController = TextEditingController();
-  List<String> filterListSource = [];
+  RxList<String> filterListSource = <String>[].obs;
+  RxList<String> sourceNamesList = <String>[].obs;
+  RxList<String> filterListTag = <String>[].obs;
+  RxList<String> tagsList = <String>[].obs;
   double? amountMin;
   double? amountMax;
+  var homePageController = Get.find<HomePageController>();
+  final filters = [' 筛选源', ' 筛选标签', ' 数额区间'];
+  final  duration = const Duration(milliseconds: 300);
+
+
+  @override
+  Future<void> onInit() async {
+    super.onInit();
+    sourceNamesList.addAll(await DBApi.getSourceNames());
+    tagsList.addAll(await DBApi.getTags());
+    //用到的homePageController主要是为了将筛选条件进行同步，这样重新打开筛选页面时，可以看到之前的筛选条件
+    filterListSource.addAll(homePageController.filterListSource);
+    filterListTag.addAll(homePageController.filterListTag);
+    amountMin = homePageController.filterAmountMin;
+    amountMax = homePageController.filterAmountMax;
+    update();
+  }
 
   void clearFilter(){
     filterListSource.clear();
+    filterListTag.clear();
     amountMin = null;
     amountMax = null;
     minEditController.clear();
@@ -237,9 +269,25 @@ class FilterSelectPageController extends GetxController{
     update();
   }
 
-  void setSelectedValue(List<String> value) {
-    filterListSource=value;
-    update();
+  //确认
+  void confirm(){
+    homePageController.filterListSource = filterListSource;
+    homePageController.filterListTag = filterListTag;
+    homePageController.filterAmountMin = amountMin;
+    homePageController.filterAmountMax = amountMax;
+    homePageController.buildFilterFuncList();
+    Get.back();
   }
 
+  void setSelectedSourceValue(List<String> value) {
+    filterListSource.clear();
+    filterListSource.addAll(value);
+    update();
+  }
+  
+  void setSelectedTagValue(List<String> value) {
+    filterListTag.clear();
+    filterListTag.addAll(value);
+    update();
+  }
 }

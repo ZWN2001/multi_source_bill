@@ -12,8 +12,13 @@ TODO
 - [x] 按价格筛选
 - [x] 按源筛选
 - [x] tag应该迁移到source里(未测试)
+- [ ] 数据导出与导入 
+
+一些优化方向：
+- [ ] 对数据结构进行细粒度划分
+- [ ] 数据存储、更新策略的优化
 
 打包：
 ```shell
-flutter build apk --target-platform android-arm64 --split-per-abi --flavor prod
+flutter build apk --target-platform android-arm64 --split-per-abi
 ```

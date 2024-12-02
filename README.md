@@ -4,6 +4,8 @@
 
 用于对多个投资源数据进行汇总与展示，更直观地看出资金变动
 
+本项目使用追加Commons Clause的MIT协议，明确禁止将代码用于任何直接商业收益相关的行为。
+
 ## TODO 
 
 - [x] 删除投资源时在总数据中删除对应金额
@@ -29,3 +31,71 @@
 ```shell
 flutter build apk --target-platform android-arm64 --split-per-abi
 ```
+
+MIT License
+
+Copyright (c) 2024 Karl Eric
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+text
+
+复制
+MIT License
+
+Copyright (c) [YEAR] [AUTHOR]
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Commons Clause License Condition
+
+The Software is provided to you by the Licensor under the License, as defined
+below, subject to the following condition.
+
+Condition: Without limiting other conditions in the License, the grant of
+rights under the License does not include, and the License does not grant you,
+the right to Sell the Software.
+
+For purposes of the foregoing, “Sell” means primarily for the purpose of
+commercial advantage or monetary compensation. The following are expressly
+excluded from the definition of “Sell”:
+
+1. The sale of the rights to access, download, use, or modify the Software in
+source or object form.
+2. The provision of support or services related to the Software, provided that
+you do not charge separately for the Software itself.
+3. The inclusion of the Software in a distribution aggregate, such as a
+distribution or application store, where the aggregate does not itself charge
+a fee for the Software.

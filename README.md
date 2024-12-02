@@ -1,8 +1,10 @@
-![](https://socialify.git.ci/ZWN2001/multi_source_bill/image?language=1&owner=1&name=1&stargazers=1&theme=Light)
+![multi_source_bill](https://socialify.git.ci/ZWN2001/multi_source_bill/image?description=1&language=1&logo=https%3A%2F%2Fgithub.com%2FZWN2001%2Fmulti_source_bill%2Fblob%2Fmaster%2Fassets%2Flogo512.png%3Fraw%3Dtrue&name=1&owner=1&stargazers=1&theme=Light)
 
 # multi_source_bill
 
-TODO 
+用于对多个投资源数据进行汇总与展示，更直观地看出资金变动
+
+## TODO 
 
 - [x] 删除投资源时在总数据中删除对应金额
 - [x] 迁移存储到数据库
@@ -14,13 +16,16 @@ TODO
 - [x] 按价格筛选
 - [x] 按源筛选
 - [x] tag应该迁移到source里(未测试)
+- [x] logo
+- [x] 主题
 - [ ] 数据导出与导入 
 
 一些优化方向：
 - [ ] 对数据结构进行细粒度划分
 - [ ] 数据存储、更新策略的优化
 
-打包：
+## 打包
+
 ```shell
 flutter build apk --target-platform android-arm64 --split-per-abi
 ```

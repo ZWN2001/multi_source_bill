@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:multi_source_bill/api/db_api.dart';
 import 'package:multi_source_bill/widget/tag_item.dart';
 
@@ -31,6 +32,7 @@ class DataOverviewCard extends StatelessWidget {
     min = result[0];
     min = result[1];
     double trending = dataOverview.amount - dataOverview.amountLast;
+    ColorScheme colorScheme = context.theme.colorScheme;
     return Card(
       child: Container(
         margin: const EdgeInsets.fromLTRB(12, 12, 12, 0),
@@ -62,18 +64,18 @@ class DataOverviewCard extends StatelessWidget {
                           deleteCallback!(dataOverview);
                         }
                       },
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.delete,
-                        color: Colors.black,
+                        color: Get.theme.colorScheme.primary,
                       )),
                   IconButton(
                       onPressed: () async {
                         await _tagAdd(context);
                         updateCallback!(dataOverview);
                       },
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.tag,
-                        color: Colors.black,
+                        color: Get.theme.colorScheme.primary,
                       )),
                   IconButton(
                       onPressed: () async {
@@ -85,9 +87,9 @@ class DataOverviewCard extends StatelessWidget {
                         max = result[1];
                         updateCallback!(dataOverview);
                       },
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.add,
-                        color: Colors.black,
+                        color: Get.theme.colorScheme.primary,
                       )),
                 ]
                     : [],

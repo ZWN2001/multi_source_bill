@@ -52,7 +52,6 @@ class HomePage extends StatelessWidget {
                                 const Size.fromHeight(44)),
                             border: InputBorder.none,
                           ),
-                          // menuHeight: 30,
                           initialSelection: hc.selectedFilter,
                           onSelected: hc.onSelect,
                           dropdownMenuEntries: _buildMenuList(

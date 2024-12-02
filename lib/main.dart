@@ -112,6 +112,39 @@ class MainPage extends StatelessWidget {
                     GlobalCupertinoLocalizations.delegate,
                   ],
                   locale: const Locale('zh'),
+                    builder: (context, child) {
+                      double scale = SharedPreferenceUtil.instance
+                          .getDouble(SharedPreferenceUtil.TEXT_SCALE) ??
+                          1;
+                      var o = MediaQuery.of(context).orientation;
+                      return MediaQuery(
+                        key: UniqueKey(),
+                        data: MediaQuery.of(context)
+                            .copyWith(textScaler: TextScaler.linear(scale)),
+                        child: OrientationBuilder(
+                          builder: (BuildContext context,
+                              Orientation orientation) {
+                            if (o != orientation ||
+                                orientation == Orientation.landscape) {
+                              if (orientation == Orientation.landscape) {
+                                SystemChrome.setEnabledSystemUIMode(
+                                    SystemUiMode.manual,
+                                    overlays: [SystemUiOverlay.bottom]);
+                              } else {
+                                SystemChrome.setEnabledSystemUIMode(
+                                    SystemUiMode.manual,
+                                    overlays: [
+                                      SystemUiOverlay.top,
+                                      SystemUiOverlay.bottom
+                                    ]);
+                              }
+                              o = orientation;
+                            }
+                            return child!;
+                          },
+                        ),
+                      );
+                    },
                   home: const HomePage()
                 );
               },

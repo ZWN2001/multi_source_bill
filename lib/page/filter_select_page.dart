@@ -308,7 +308,7 @@ class FilterSelectPageController extends GetxController{
 
   void onPop(bool didPop, Object? result) {
     if(lastPressedAt == null || DateTime.now().difference(lastPressedAt!) > const Duration(seconds: 3)){
-      Fluttertoast.showToast(msg: '再按一次退出');
+      Fluttertoast.showToast(msg: '再按一次返回');
       lastPressedAt = DateTime.now();
     }else{
       clearFilter();

@@ -2,12 +2,10 @@ import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:get/get.dart';
 import 'package:multi_source_bill/api/db_api.dart';
 import 'package:multi_source_bill/page/filter_select_page.dart';
 import 'package:multi_source_bill/page/home_page.dart';
-import 'package:multi_source_bill/page/theme_settings.dart';
 import 'package:multi_source_bill/utils/db.dart';
 import 'package:multi_source_bill/utils/font.dart';
 import 'package:multi_source_bill/utils/sharedpreference_util.dart';
@@ -62,7 +60,6 @@ class MainPage extends StatelessWidget {
               : null);
       SystemChrome.setSystemUIOverlayStyle(style);
     }
-    final ZoomDrawerController zoomDrawerController = ZoomDrawerController();
     return DynamicColorBuilder(
         builder: (lightDynamic, darkDynamic) => ThemeProvider(
           lightDynamic: lightDynamic,
@@ -115,17 +112,7 @@ class MainPage extends StatelessWidget {
                     GlobalCupertinoLocalizations.delegate,
                   ],
                   locale: const Locale('zh'),
-                  home: ZoomDrawer(
-                    controller: zoomDrawerController,
-                    menuScreen: const ThemeSettingsPage(),
-                    mainScreen: HomePage(controller: zoomDrawerController,),
-                    borderRadius: 24.0,
-                    showShadow: true,
-                    mainScreenTapClose: true,
-                    angle: -12.0,
-                    drawerShadowsBackgroundColor: Colors.grey,
-                    slideWidth: MediaQuery.of(context).size.width * 0.9,
-                  ),
+                  home: const HomePage()
                 );
               },
             ),

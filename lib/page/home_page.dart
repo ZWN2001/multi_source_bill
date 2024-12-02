@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:get/get.dart';
 import 'package:multi_source_bill/api/db_api.dart';
+import 'package:multi_source_bill/page/theme_settings.dart';
 
 import '../entity/data_overview.dart';
 import '../entity/source.dart';
@@ -10,99 +11,108 @@ import '../widget/cards/data_overview_card.dart';
 import 'filter_select_page.dart';
 
 class HomePage extends StatelessWidget {
-  final ZoomDrawerController controller;
 
-  const HomePage({super.key, required this.controller});
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    var homePageController = Get.find<HomePageController>();
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("首页"),
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {
-            controller.toggle!();
-          },
-        ),
-      ),
-      body: GetBuilder(
-          init: homePageController,
-          builder: (_) {
-            return Column(
-              children: [
-                //排序与筛选
-                Row(
+    var hc = Get.find<HomePageController>();
+    return ZoomDrawer(
+        controller: hc.zoomDrawerController,
+        menuScreen: const ThemeSettingsPage(),
+        borderRadius: 24.0,
+        showShadow: true,
+        mainScreenTapClose: true,
+        angle: -12.0,
+        drawerShadowsBackgroundColor: Colors.grey,
+        slideWidth: MediaQuery.of(context).size.width * 0.9,
+        mainScreen:Scaffold(
+          appBar: AppBar(
+            title: const Text("首页"),
+            leading: IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: (){
+                hc.toggleDrawer();
+              },
+            ),
+          ),
+          body:GetBuilder(
+              init: hc,
+              builder: (_) {
+                return Column(
                   children: [
-                    DropdownMenu<String>(
-                      inputDecorationTheme: InputDecorationTheme(
-                        isDense: false,
-                        contentPadding: const EdgeInsets.fromLTRB(24, 0, 0, 0),
-                        constraints: BoxConstraints.tight(
-                            const Size.fromHeight(44)),
-                        border: InputBorder.none,
-                      ),
-                      // menuHeight: 30,
-                      initialSelection: homePageController.selectedFilter,
-                      onSelected: homePageController.onSelect,
-                      dropdownMenuEntries: _buildMenuList(
-                          homePageController.filterData),
+                    //排序与筛选
+                    Row(
+                      children: [
+                        DropdownMenu<String>(
+                          inputDecorationTheme: InputDecorationTheme(
+                            isDense: false,
+                            contentPadding: const EdgeInsets.fromLTRB(24, 0, 0, 0),
+                            constraints: BoxConstraints.tight(
+                                const Size.fromHeight(44)),
+                            border: InputBorder.none,
+                          ),
+                          // menuHeight: 30,
+                          initialSelection: hc.selectedFilter,
+                          onSelected: hc.onSelect,
+                          dropdownMenuEntries: _buildMenuList(
+                              hc.filterData),
+                        ),
+                        Expanded(child: Container()),
+                        //筛选
+                        IconButton(
+                          icon: hc.filterFuncList.isEmpty
+                              ? const Icon(Icons.filter_alt)
+                              : const Icon(
+                              Icons.filter_alt_sharp, color: Colors.blue),
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(
+                                builder: (context) => FilterSelectPage()));
+                          },
+                        ),
+                        const SizedBox(width: 16),
+                      ],
                     ),
-                    Expanded(child: Container()),
-                    //筛选
-                    IconButton(
-                      icon: homePageController.filterFuncList.isEmpty
-                          ? const Icon(Icons.filter_alt)
-                          : const Icon(
-                          Icons.filter_alt_sharp, color: Colors.blue),
-                      onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(
-                            builder: (context) => FilterSelectPage()));
-                      },
-                    ),
-                    const SizedBox(width: 16),
+                    //数据列表
+                    Expanded(
+                        child: SingleChildScrollView(
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (BuildContext context, int index) {
+                              return SizedBox(
+                                height: 260,
+                                child: DataOverviewCard(
+                                  dataOverview: hc
+                                      .dataOverviews[index],
+                                  enableEdit: index != 0,
+                                  deleteCallback: (DataOverview dataOverview) {
+                                    hc.onDeleteCall(index);
+                                  },
+                                  updateCallback: (DataOverview dataOverview) {
+                                    hc.onUpdateCall(
+                                        index, dataOverview);
+                                  },
+                                ),
+                              );
+                            },
+                            itemCount: hc.dataOverviews.length,
+                          ),
+                        ))
                   ],
-                ),
-                //数据列表
-                Expanded(
-                    child: SingleChildScrollView(
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: (BuildContext context, int index) {
-                          return SizedBox(
-                            height: 260,
-                            child: DataOverviewCard(
-                              dataOverview: homePageController
-                                  .dataOverviews[index],
-                              enableEdit: index != 0,
-                              deleteCallback: (DataOverview dataOverview) {
-                                homePageController.onDeleteCall(index);
-                              },
-                              updateCallback: (DataOverview dataOverview) {
-                                homePageController.onUpdateCall(
-                                    index, dataOverview);
-                              },
-                            ),
-                          );
-                        },
-                        itemCount: homePageController.dataOverviews.length,
-                      ),
-                    ))
-              ],
-            );
-          }),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          bool result = await _showDialogFunction(context);
-          if (result) {
-            homePageController.refreshData();
-          }
-        },
-        child: const Icon(Icons.add),
-      ),
+                );
+              }),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () async {
+              bool result = await _showDialogFunction(context);
+              if (result) {
+                hc.refreshData();
+              }
+            },
+            child: const Icon(Icons.add),
+          ),
+        )
     );
   }
 
@@ -178,6 +188,13 @@ class HomePageController extends GetxController{
   List<String> filterListTag = [];
   double? filterAmountMin;
   double? filterAmountMax;
+
+  final zoomDrawerController = ZoomDrawerController();
+
+  void toggleDrawer() {
+    zoomDrawerController.toggle?.call();
+    update();
+  }
 
   @override
   Future<void> onInit() async{

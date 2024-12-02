@@ -301,39 +301,9 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        '你的新主题色：${ColorUtil.nameColor(_newPrimary)}',
+                        '新主题色：${ColorUtil.nameColor(_newPrimary)}',
                         style: TextStyle(color: _fontColorOnNewPrimary),
                       ),
-                      InkWell(
-                        customBorder: CircleBorder(),
-                        onTap: () => {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: Text('颜色不对？'),
-                              content: Text('若你选择的颜色不满足易读性要求，将使用满足要求的最相似颜色'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: Text('好'),
-                                ),
-                              ],
-                            ),
-                          )
-                        },
-                        child: SizedBox(
-                          height: 50,
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 5.0, top: 2, right: 5.0),
-                            child: Icon(
-                              Icons.error_outline_rounded,
-                              size: 20,
-                              color: _fontColorOnNewPrimary,
-                            ),
-                          ),
-                        ),
-                      )
                     ],
                   ),
                   trailing: Row(

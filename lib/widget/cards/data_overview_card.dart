@@ -32,7 +32,6 @@ class DataOverviewCard extends StatelessWidget {
     min = result[0];
     min = result[1];
     double trending = dataOverview.amount - dataOverview.amountLast;
-    ColorScheme colorScheme = context.theme.colorScheme;
     return Card(
       child: Container(
         margin: const EdgeInsets.fromLTRB(12, 12, 12, 0),

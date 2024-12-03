@@ -122,7 +122,7 @@ class HomePage extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("提示"),
+          title: const Text("添加投资源"),
           content: TextField(
             controller: controller,
             maxLength: 64,

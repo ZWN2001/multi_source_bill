@@ -106,6 +106,7 @@ class FilterSelectPage extends StatelessWidget {
                   const SizedBox(width: 16),
                   ElevatedButton(onPressed: (){
                     fc.confirm();
+                    fc.confirmFlag = true;
                     Get.back();
                   }, child: const Text("确定")),
                 ],
@@ -253,6 +254,7 @@ class FilterSelectPageController extends GetxController{
   final filters = [' 筛选源', ' 筛选标签', ' 数额区间'];
   final  duration = const Duration(milliseconds: 300);
   DateTime? lastPressedAt; //上次点击时间
+  bool confirmFlag = false;
 
 
   @override
@@ -307,7 +309,9 @@ class FilterSelectPageController extends GetxController{
   }
 
   void onPop(bool didPop, Object? result) {
-    if(lastPressedAt == null || DateTime.now().difference(lastPressedAt!) > const Duration(seconds: 3)){
+    if (confirmFlag) {
+      // confirm();
+    } else if(lastPressedAt == null || DateTime.now().difference(lastPressedAt!) > const Duration(seconds: 3)){
       Fluttertoast.showToast(msg: '再按一次返回');
       lastPressedAt = DateTime.now();
     }else{

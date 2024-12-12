@@ -135,6 +135,14 @@ class DBApi{
     //更新总amount
     int minSourceId = await getMinSourceId();
     List<AmountData> amountListOfAll = await getAmountData(minSourceId);
+    if (amountListOfAll.isEmpty) {
+      await _database!.insert('AmountData', {
+        'source_id': minSourceId,
+        'date_time': amountData.dateTime,
+        'amount': amountData.amount
+      });
+      return;
+    }
     AmountData last = amountListOfAll.last;
     //如果最后一条数据的日期和新增的数据日期不同，则新增一条数据
     if (last.dateTime != amountData.dateTime) {
@@ -248,12 +256,12 @@ class DBApi{
 
   static Future<void> dbInit() async{
     await  cleanDB();
-    await _database!.insert('Sources', {'id':1,'source_name': 'test'});
-    await _database!.insert('AmountData', {'source_id':1,'date_time':'2024-01-12','amount': 100});
-    await _database!.insert('AmountData', {'source_id':0,'date_time':'2024-01-12','amount': 100});
-    await _database!.insert('AmountData', {'source_id':1,'date_time':'2024-11-05','amount': 100});
-    await _database!.insert('AmountData', {'source_id':0,'date_time':'2024-11-05','amount': 100});
-    await _database!.insert('Tags', {'source_id':1,'tag_name':'test'});
+    // await _database!.insert('Sources', {'id':1,'source_name': 'test'});
+    // await _database!.insert('AmountData', {'source_id':1,'date_time':'2024-01-12','amount': 100});
+    // await _database!.insert('AmountData', {'source_id':0,'date_time':'2024-01-12','amount': 100});
+    // await _database!.insert('AmountData', {'source_id':1,'date_time':'2024-11-05','amount': 100});
+    // await _database!.insert('AmountData', {'source_id':0,'date_time':'2024-11-05','amount': 100});
+    // await _database!.insert('Tags', {'source_id':1,'tag_name':'test'});
   }
 
 }

@@ -14,7 +14,7 @@ class DB {
       await _database!.execute('CREATE TABLE IF NOT EXISTS AmountData ('
           'id INTEGER PRIMARY KEY AUTOINCREMENT, '
           'source_id INTEGER, '
-          'date_time char(16), '
+          'date_time DATE, '
           'amount float )');
 
       await _database!.execute('CREATE TABLE IF NOT EXISTS Tags ('

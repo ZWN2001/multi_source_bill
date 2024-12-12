@@ -249,8 +249,10 @@ class DBApi{
   static Future<void> dbInit() async{
     await  cleanDB();
     await _database!.insert('Sources', {'id':1,'source_name': 'test'});
-    await _database!.insert('AmountData', {'source_id':1,'date_time':'01-01','amount': 100});
-    await _database!.insert('AmountData', {'source_id':0,'date_time':'01-01','amount': 100});
+    await _database!.insert('AmountData', {'source_id':1,'date_time':'2024-01-12','amount': 100});
+    await _database!.insert('AmountData', {'source_id':0,'date_time':'2024-01-12','amount': 100});
+    await _database!.insert('AmountData', {'source_id':1,'date_time':'2024-11-05','amount': 100});
+    await _database!.insert('AmountData', {'source_id':0,'date_time':'2024-11-05','amount': 100});
     await _database!.insert('Tags', {'source_id':1,'tag_name':'test'});
   }
 

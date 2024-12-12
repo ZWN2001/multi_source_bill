@@ -164,10 +164,13 @@ class DataOverviewCard extends StatelessWidget {
       return;
     }
 
+    //格式化日期: mm-dd 2024-12-06 15:52:51.525048
+    String date = DateTime.now().toString().substring(0, 10);
+
     await DBApi.addAmountData(
         dataOverview.source.id,
         AmountData(
-          '${DateTime.now().month}-${DateTime.now().day}',
+          date,
           amount,
         ));
   }
